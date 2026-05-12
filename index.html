@@ -134,16 +134,20 @@
     section { padding: 60px 16px !important; }
     .hero-section { padding: 100px 16px 40px !important; }
 
-    .app-mockup-inner { max-width: none !important; width: 580px !important; margin: 0 auto; }
-    .app-mockup-wrapper { transform: scale(0.8); transform-origin: center top; height: 350px; }
+    .app-mockup-wrapper { position: relative !important; width: 100% !important; display: block !important; height: 350px; }
+    .app-mockup-scale { transform: scale(0.8); transform-origin: center top; width: 100%; height: 100%; display: block !important; }
+    .app-mockup-float { width: 100%; height: 100%; display: block !important; }
+    .app-mockup-inner { position: absolute !important; left: 50% !important; top: 0 !important; margin-left: -290px !important; max-width: none !important; width: 580px !important; }
   }
 
   @media (max-width: 600px) {
-    .app-mockup-wrapper { transform: scale(0.65); height: 280px; }
+    .app-mockup-scale { transform: scale(0.65); }
+    .app-mockup-wrapper { height: 280px; }
   }
 
   @media (max-width: 480px) {
-    .app-mockup-wrapper { transform: scale(0.55); height: 240px; }
+    .app-mockup-scale { transform: scale(0.55); }
+    .app-mockup-wrapper { height: 240px; }
     .hero-cta-container { flex-direction: column; }
     .hero-stats-container { flex-wrap: wrap; }
     .nav-brand-text { font-size: 16px !important; }
@@ -471,9 +475,13 @@ function Hero({ tweaks }) {
             <span style={{fontSize:12,color:'#818CF8',fontWeight:600,letterSpacing:'0.05em'}}>2026 YKS MÜFREDATıNA TAM UYUMLU</span>
           </div>
 
-          <h1 style={{fontSize:'clamp(32px,4vw,54px)', fontWeight:900, lineHeight:1.1, letterSpacing:'-0.03em', marginBottom:24, minHeight:'2.4em'}}>
-            {typed}
-            <span style={{animation:'blink 1s infinite',display:'inline-block',width:3,height:'0.85em',background:'#4F46E5',marginLeft:2,verticalAlign:'middle'}}/>
+          <h1 style={{fontSize:'clamp(32px,4vw,54px)', fontWeight:900, lineHeight:1.1, letterSpacing:'-0.03em', marginBottom:24, position:'relative'}}>
+            {/* Görünmez metin: Yazı animasyonunda yüksekliğin sıçramasını engeller */}
+            <span style={{visibility:'hidden', whiteSpace:'pre-wrap', display:'block'}}>{full}</span>
+            <span style={{position:'absolute', top:0, left:0, right:0}}>
+              {typed}
+              <span style={{animation:'blink 1s infinite',display:'inline-block',width:3,height:'0.85em',background:'#4F46E5',marginLeft:2,verticalAlign:'middle'}}/>
+            </span>
           </h1>
 
           <p style={{fontSize:17, color:'#94A3B8', lineHeight:1.75, marginBottom:36, maxWidth:500}}>
@@ -515,8 +523,12 @@ function Hero({ tweaks }) {
         </div>
 
         {/* Right — App mockup */}
-        <div className="animate-float app-mockup-wrapper" style={{display:'flex', justifyContent:'center', animation:'float 5s ease-in-out infinite'}}>
-          <MiniDashboard />
+        <div className="app-mockup-wrapper" style={{display:'flex', justifyContent:'center', width:'100%'}}>
+          <div className="app-mockup-scale" style={{width:'100%', display:'flex', justifyContent:'center'}}>
+            <div className="app-mockup-float" style={{animation:'float 5s ease-in-out infinite', width:'100%', display:'flex', justifyContent:'center'}}>
+              <MiniDashboard />
+            </div>
+          </div>
         </div>
       </div>
     </section>
