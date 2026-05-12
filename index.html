@@ -109,6 +109,46 @@
   .d4 { transition-delay: .32s !important; }
   .d5 { transition-delay: .40s !important; }
   .d6 { transition-delay: .48s !important; }
+
+  /* ── Mobile Responsiveness ── */
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr !important; gap: 40px !important; text-align: center; }
+    .hero-grid > div:first-child p { margin: 0 auto 32px auto !important; }
+    .hero-cta-container { justify-content: center !important; }
+    .hero-stats-container { justify-content: center !important; }
+    
+    .features-grid { grid-template-columns: 1fr !important; }
+    
+    .how-it-works-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+    .how-it-works-line { display: none !important; }
+    
+    .social-proof-grid { grid-template-columns: 1fr !important; }
+    
+    .pricing-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+    
+    .nav-links { display: none !important; }
+    .nav-inner { padding: 0 16px !important; }
+    
+    .footer-container { flex-direction: column !important; text-align: center !important; gap: 20px !important; }
+    
+    section { padding: 60px 16px !important; }
+    .hero-section { padding: 100px 16px 40px !important; }
+
+    .app-mockup-inner { max-width: none !important; width: 580px !important; margin: 0 auto; }
+    .app-mockup-wrapper { transform: scale(0.8); transform-origin: center top; height: 350px; }
+  }
+
+  @media (max-width: 600px) {
+    .app-mockup-wrapper { transform: scale(0.65); height: 280px; }
+  }
+
+  @media (max-width: 480px) {
+    .app-mockup-wrapper { transform: scale(0.55); height: 240px; }
+    .hero-cta-container { flex-direction: column; }
+    .hero-stats-container { flex-wrap: wrap; }
+    .nav-brand-text { font-size: 16px !important; }
+    .final-cta-form { flex-direction: column; }
+  }
 </style>
 </head>
 <body>
@@ -165,7 +205,7 @@ function MiniDashboard() {
   const tabs = [{id:'yol',label:'Yol Haritası'},{id:'analiz',label:'Net Analizi'},{id:'plan',label:'AI Planlayıcı'}];
 
   return (
-    <div style={{
+    <div className="app-mockup-inner" style={{
       background:'#0F172A', borderRadius:16, overflow:'hidden',
       border:'1px solid rgba(255,255,255,.1)',
       boxShadow:'0 40px 120px rgba(0,0,0,.8), 0 0 0 1px rgba(79,70,229,.2)',
@@ -359,14 +399,14 @@ function Navbar({ tweaks }) {
       transition:'all .3s ease',
       padding:'0 24px',
     }}>
-      <div style={{maxWidth:1200, margin:'0 auto', height:64, display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+      <div className="nav-inner" style={{maxWidth:1200, margin:'0 auto', height:64, display:'flex', alignItems:'center', justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:8}}>
           <div style={{width:32,height:32,background:'linear-gradient(135deg,#4F46E5,#7C3AED)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}>
             <IconCompass />
           </div>
-          <span style={{fontWeight:800, fontSize:18, letterSpacing:'-0.02em'}}>Pusula <span style={{color:'#818CF8'}}>YKS</span></span>
+          <span className="nav-brand-text" style={{fontWeight:800, fontSize:18, letterSpacing:'-0.02em'}}>Pusula <span style={{color:'#818CF8'}}>YKS</span></span>
         </div>
-        <div style={{display:'flex',gap:32}}>
+        <div className="nav-links" style={{display:'flex',gap:32}}>
           {['Özellikler','Nasıl Çalışır','Fiyatlandırma'].map(l => (
             <a key={l} href={`#${l.toLowerCase().replace(' ','-')}`} className="nav-link"
               style={{fontSize:14, color:'#94A3B8', textDecoration:'none', fontWeight:500}}>{l}</a>
@@ -402,7 +442,7 @@ function Hero({ tweaks }) {
   }, [full]);
 
   return (
-    <section style={{
+    <section className="hero-section" style={{
       minHeight:'100vh', display:'flex', alignItems:'center',
       padding:'80px 24px 40px',
       background:'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(79,70,229,.15) 0%, transparent 70%)',
@@ -419,7 +459,7 @@ function Hero({ tweaks }) {
       <div style={{position:'absolute',top:'20%',left:'5%',width:400,height:400,background:'rgba(79,70,229,.08)',borderRadius:'50%',filter:'blur(80px)',pointerEvents:'none'}}/>
       <div style={{position:'absolute',bottom:'20%',right:'5%',width:300,height:300,background:'rgba(124,58,237,.06)',borderRadius:'50%',filter:'blur(80px)',pointerEvents:'none'}}/>
 
-      <div style={{maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:'1fr 1fr', gap:64, alignItems:'center', position:'relative', zIndex:1, width:'100%'}}>
+      <div className="hero-grid" style={{maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:'1fr 1fr', gap:64, alignItems:'center', position:'relative', zIndex:1, width:'100%'}}>
         {/* Left */}
         <div className="animate-fade-up">
           <div style={{
@@ -440,7 +480,7 @@ function Hero({ tweaks }) {
             Yapay zeka destekli dijital koçun <strong style={{color:'#E2E8F0'}}>Pusula YKS</strong> ile günlük planını optimize et, denemelerini analiz et ve net projektörü ile sıfırdan hedefe giden yolu gör.
           </p>
 
-          <div style={{display:'flex', gap:14, alignItems:'center', flexWrap:'wrap'}}>
+          <div className="hero-cta-container" style={{display:'flex', gap:14, alignItems:'center', flexWrap:'wrap'}}>
             <a href="https://app.pusulayks.com/register" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}>
             <button className="gradient-btn" style={{
               position:'relative', zIndex:1,
@@ -464,7 +504,7 @@ function Hero({ tweaks }) {
             </div>
           </div>
 
-          <div style={{display:'flex', gap:24, marginTop:36}}>
+          <div className="hero-stats-container" style={{display:'flex', gap:24, marginTop:36}}>
             {[{v:'%97',l:'Memnuniyet'},{v:'4.2x',l:'Verimlilik Artışı'}].map((s,i) => (
               <div key={i}>
                 <div style={{fontSize:26,fontWeight:900,color:'#818CF8',letterSpacing:'-0.03em'}}>{s.v}</div>
@@ -475,7 +515,7 @@ function Hero({ tweaks }) {
         </div>
 
         {/* Right — App mockup */}
-        <div className="animate-float" style={{display:'flex', justifyContent:'center', animation:'float 5s ease-in-out infinite'}}>
+        <div className="animate-float app-mockup-wrapper" style={{display:'flex', justifyContent:'center', animation:'float 5s ease-in-out infinite'}}>
           <MiniDashboard />
         </div>
       </div>
@@ -536,7 +576,7 @@ function Features() {
           <p style={{fontSize:16, color:'#64748B', maxWidth:500, margin:'0 auto'}}>Sıradan bir çalışma uygulaması değil. Senin için optimize eden bir sistemin var.</p>
         </div>
 
-        <div style={{display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:20}}>
+        <div className="features-grid" style={{display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:20}}>
           {features.map((f,i) => (
             <div key={i} className={`feature-card glass reveal scale d${i+1}`} style={{
               borderRadius:16, padding:28,
@@ -602,9 +642,9 @@ function HowItWorks() {
           </h2>
         </div>
 
-        <div style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:0, position:'relative'}}>
+        <div className="how-it-works-grid" style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:0, position:'relative'}}>
           {/* Connecting line */}
-          <div style={{position:'absolute', top:52, left:'17%', width:'66%', height:2, background:'linear-gradient(90deg, #4F46E5, #7C3AED, #4F46E5)', opacity:.3, zIndex:0}}/>
+          <div className="how-it-works-line" style={{position:'absolute', top:52, left:'17%', width:'66%', height:2, background:'linear-gradient(90deg, #4F46E5, #7C3AED, #4F46E5)', opacity:.3, zIndex:0}}/>
 
           {steps.map((s,i) => (
             <div key={i} className={`reveal d${i+1}`} style={{textAlign:'center', padding:'0 24px', position:'relative', zIndex:1}}>
@@ -652,7 +692,7 @@ function SocialProof({ tweaks }) {
             <span style={{fontSize:14, color:'#64748B', marginLeft:8}}>4.9 / 5.0 ortalama</span>
           </div>
         </div>
-        <div style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20}}>
+        <div className="social-proof-grid" style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20}}>
           {testimonials.map((t,i) => (
             <div key={i} className={`testimonial-card glass reveal scale d${i+1}`} style={{
               borderRadius:16, padding:24,
@@ -732,7 +772,7 @@ function Pricing() {
         </div>
 
         {/* Cards */}
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1.08fr', gap:20, alignItems:'center'}}>
+        <div className="pricing-grid" style={{display:'grid', gridTemplateColumns:'1fr 1.08fr', gap:20, alignItems:'center'}}>
 
           {/* Starter */}
           <div className="glass feature-card reveal left" style={{
@@ -888,7 +928,7 @@ function FinalCTA({ tweaks }) {
             <div style={{fontSize:14, color:'#64748B', marginTop:4}}>Erken erişim açıldığında seni ilk haberdar edeceğiz.</div>
           </div>
         ) : (
-          <div style={{display:'flex', gap:10, maxWidth:440, margin:'0 auto'}}>
+          <div className="final-cta-form" style={{display:'flex', gap:10, maxWidth:440, margin:'0 auto'}}>
             <input
               type="email"
               placeholder="E-posta adresin"
@@ -994,7 +1034,7 @@ function FinalCTA({ tweaks }) {
 function Footer() {
   return (
     <footer style={{borderTop:'1px solid rgba(255,255,255,.07)', padding:'40px 24px'}}>
-      <div style={{maxWidth:1200, margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:20}}>
+      <div className="footer-container" style={{maxWidth:1200, margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:20}}>
         <div style={{display:'flex',alignItems:'center',gap:8}}>
           <div style={{width:28,height:28,background:'linear-gradient(135deg,#4F46E5,#7C3AED)',borderRadius:7,display:'flex',alignItems:'center',justifyContent:'center'}}>
             <IconCompass />
