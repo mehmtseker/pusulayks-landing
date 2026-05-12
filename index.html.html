@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pusula YKS — YKS Sınav Yılını Şansa Değil, Veriye Bırak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: #0B1120; font-family: 'Inter', sans-serif; color: #E2E8F0; overflow-x: hidden; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0B1120; }
+  ::-webkit-scrollbar-thumb { background: #2D3A52; border-radius: 3px; }
+
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(79,70,229,.3)} 50%{box-shadow:0 0 40px rgba(79,70,229,.6)} }
+  @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+  @keyframes draw-line { from{stroke-dashoffset:300} to{stroke-dashoffset:0} }
+  @keyframes count-up { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fade-in-up { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  @keyframes slide-in-right { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes neon-pulse { 0%,100%{text-shadow:0 0 20px rgba(79,70,229,.5)} 50%{text-shadow:0 0 40px rgba(79,70,229,.9),0 0 80px rgba(124,58,237,.4)} }
+  @keyframes progress-fill { from{width:0} to{width:var(--w)} }
+  @keyframes dash-anim { to{stroke-dashoffset:-20} }
+
+  .animate-float { animation: float 4s ease-in-out infinite; }
+  .animate-fade-up { animation: fade-in-up .7s ease forwards; }
+  .animate-slide-right { animation: slide-in-right .7s ease forwards; }
+
+  .glass {
+    background: rgba(255,255,255,.04);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .glass-strong {
+    background: rgba(30,41,59,.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.1);
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, #818CF8, #4F46E5, #7C3AED);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-btn {
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+    transition: all .3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .gradient-btn::after {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(135deg, #6366F1, #9333EA);
+    opacity:0; transition: opacity .3s;
+  }
+  .gradient-btn:hover::after { opacity:1; }
+  .gradient-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(79,70,229,.5); }
+
+  .feature-card {
+    transition: all .35s cubic-bezier(.25,.46,.45,.94);
+    cursor: default;
+  }
+  .feature-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(79,70,229,.4) !important;
+    box-shadow: 0 20px 60px rgba(79,70,229,.15), 0 0 0 1px rgba(79,70,229,.2);
+  }
+  .step-line { background: linear-gradient(180deg, #4F46E5 0%, transparent 100%); }
+
+  .testimonial-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(99,102,241,.3) !important;
+  }
+  .testimonial-card { transition: all .3s ease; }
+
+  .nav-link { transition: color .2s; }
+  .nav-link:hover { color: #818CF8; }
+
+  .progress-bar-fill {
+    animation: progress-fill 1.5s ease forwards;
+  }
+  .chart-line {
+    stroke-dasharray: 300;
+    animation: draw-line 2s ease forwards;
+  }
+
+  /* ── Scroll reveal ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity .75s cubic-bezier(.22,1,.36,1), transform .75s cubic-bezier(.22,1,.36,1);
+  }
+  .reveal.left  { transform: translateX(-44px); }
+  .reveal.right { transform: translateX(44px); }
+  .reveal.scale { transform: scale(.92) translateY(24px); }
+  .reveal.visible { opacity: 1 !important; transform: none !important; }
+  .d1 { transition-delay: .08s !important; }
+  .d2 { transition-delay: .16s !important; }
+  .d3 { transition-delay: .24s !important; }
+  .d4 { transition-delay: .32s !important; }
+  .d5 { transition-delay: .40s !important; }
+  .d6 { transition-delay: .48s !important; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ─── TWEAK DEFAULTS ─── */
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accentColor": "#4F46E5",
+  "heroTitle": "YKS Sınav Yılını Şansa Değil, AI Koçuna Bırak.",
+  "ctaText": "Erken Erişime Katıl",
+  "showTestimonials": true,
+  "darkMode": true
+}/*EDITMODE-END*/;
+
+/* ─── SVG ICONS ─── */
+const IconBrain = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
+    <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>
+  </svg>
+);
+const IconTarget = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+    <line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/>
+    <line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/>
+  </svg>
+);
+const IconChart = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+    <polyline points="16 7 22 7 22 13"/>
+  </svg>
+);
+const IconMap = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+    <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
+  </svg>
+);
+const IconCompass = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+  </svg>
+);
+
+/* ─── MINI DASHBOARD MOCKUP ─── */
+function MiniDashboard() {
+  const [activeTab, setActiveTab] = useState('yol');
+  const tabs = [{id:'yol',label:'Yol Haritası'},{id:'analiz',label:'Net Analizi'},{id:'plan',label:'AI Planlayıcı'}];
+
+  return (
+    <div style={{
+      background:'#0F172A', borderRadius:16, overflow:'hidden',
+      border:'1px solid rgba(255,255,255,.1)',
+      boxShadow:'0 40px 120px rgba(0,0,0,.8), 0 0 0 1px rgba(79,70,229,.2)',
+      width:'100%', maxWidth:580
+    }}>
+      {/* Titlebar */}
+      <div style={{background:'#1a2540', padding:'10px 16px', display:'flex', alignItems:'center', gap:12, borderBottom:'1px solid rgba(255,255,255,.07)'}}>
+        <div style={{display:'flex',gap:6}}>
+          <div style={{width:10,height:10,borderRadius:'50%',background:'#FF5F57'}}/>
+          <div style={{width:10,height:10,borderRadius:'50%',background:'#FFBD2E'}}/>
+          <div style={{width:10,height:10,borderRadius:'50%',background:'#28CA41'}}/>
+        </div>
+        <div style={{display:'flex',gap:4,marginLeft:8}}>
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setActiveTab(t.id)} style={{
+              background: activeTab===t.id ? 'rgba(79,70,229,.25)' : 'transparent',
+              border: activeTab===t.id ? '1px solid rgba(79,70,229,.5)' : '1px solid transparent',
+              color: activeTab===t.id ? '#818CF8' : '#64748B',
+              padding:'3px 10px', borderRadius:6, fontSize:11, cursor:'pointer', transition:'all .2s', fontFamily:'Inter,sans-serif'
+            }}>{t.label}</button>
+          ))}
+        </div>
+        <div style={{marginLeft:'auto', background:'linear-gradient(135deg,#4F46E5,#7C3AED)', padding:'4px 12px', borderRadius:6, fontSize:11, color:'white', fontFamily:'Inter,sans-serif', fontWeight:600}}>
+          ✦ Plan Oluştur
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{padding:16, height:320}}>
+        {activeTab === 'yol' && <YolHaritasiView />}
+        {activeTab === 'analiz' && <NetAnaliziView />}
+        {activeTab === 'plan' && <AIPlanlayiciView />}
+      </div>
+    </div>
+  );
+}
+
+function YolHaritasiView() {
+  const weeks = [
+    {range:'20 Nis – 26 Nis', net:'+8.1', active:true},
+    {range:'27 Nis – 3 May', net:'+7.8', active:false},
+    {range:'4 May – 10 May', net:'+12.4', active:false},
+    {range:'11 May – 17 May', net:'+8.8', active:false},
+  ];
+  return (
+    <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, height:'100%'}}>
+      <div>
+        <div style={{fontSize:10, color:'#4F46E5', fontWeight:700, marginBottom:8, letterSpacing:'0.1em'}}>HAFTALIK AKIŞ</div>
+        {weeks.map((w,i) => (
+          <div key={i} style={{
+            background: w.active ? 'rgba(79,70,229,.15)' : 'rgba(255,255,255,.03)',
+            border: `1px solid ${w.active ? 'rgba(79,70,229,.4)' : 'rgba(255,255,255,.06)'}`,
+            borderRadius:8, padding:'8px 10px', marginBottom:6,
+            display:'flex', alignItems:'center', justifyContent:'space-between'
+          }}>
+            <div>
+              {w.active && <div style={{width:8,height:8,borderRadius:'50%',background:'#4F46E5',display:'inline-block',marginRight:6}}/>}
+              <span style={{fontSize:11, color: w.active ? '#E2E8F0' : '#64748B', fontWeight: w.active ? 600 : 400}}>{w.range}</span>
+            </div>
+            <span style={{fontSize:11, color:'#22C55E', fontWeight:700}}>{w.net} Net</span>
+          </div>
+        ))}
+      </div>
+      <div style={{display:'flex', flexDirection:'column', gap:8}}>
+        <div style={{background:'rgba(255,255,255,.04)', borderRadius:8, padding:10, border:'1px solid rgba(255,255,255,.06)', flex:1}}>
+          <div style={{fontSize:9, color:'#4F46E5', fontWeight:700, marginBottom:6, letterSpacing:'0.1em'}}>NET PROJEKTÖR</div>
+          <MiniChart />
+        </div>
+        <div style={{background:'rgba(255,255,255,.04)', borderRadius:8, padding:10, border:'1px solid rgba(255,255,255,.06)'}}>
+          <div style={{fontSize:9, color:'#94A3B8', marginBottom:4}}>TAHMİNİ BİTİŞ</div>
+          <div style={{display:'flex', gap:16}}>
+            <div><div style={{fontSize:20, fontWeight:800, color:'#818CF8'}}>53<span style={{fontSize:12}}>g</span></div><div style={{fontSize:9,color:'#64748B'}}>YKS'ye</div></div>
+            <div><div style={{fontSize:20, fontWeight:800, color:'#22C55E'}}>86</div><div style={{fontSize:9,color:'#64748B'}}>Konu Tamam</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MiniChart() {
+  const tytPoints = "10,80 30,72 50,65 70,55 90,48 110,38 130,25 150,18";
+  const projPoints = "150,18 170,12 190,8 210,4";
+  return (
+    <svg viewBox="0 0 220 90" style={{width:'100%',height:80}}>
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#22C55E" stopOpacity=".4"/>
+          <stop offset="100%" stopColor="#22C55E" stopOpacity="0"/>
+        </linearGradient>
+        <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#818CF8" stopOpacity=".3"/>
+          <stop offset="100%" stopColor="#818CF8" stopOpacity="0"/>
+        </linearGradient>
+      </defs>
+      <polygon points={`10,80 ${tytPoints} 150,90 10,90`} fill="url(#g1)" opacity=".6"/>
+      <polyline points={tytPoints} fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" className="chart-line"/>
+      <polyline points={projPoints} fill="none" stroke="#818CF8" strokeWidth="1.5" strokeDasharray="4 3" strokeLinecap="round"/>
+      <text x="4" y="10" fontSize="7" fill="#64748B">TYT</text>
+      <text x="155" y="10" fontSize="7" fill="#64748B">Proj</text>
+    </svg>
+  );
+}
+
+function NetAnaliziView() {
+  const branches = [
+    {name:'TYT Matematik', correct:18, wrong:4, color:'#4F46E5'},
+    {name:'TYT Türkçe', correct:28, wrong:2, color:'#22C55E'},
+    {name:'AYT Fizik', correct:8, wrong:7, color:'#F59E0B'},
+    {name:'AYT Kimya', correct:12, wrong:5, color:'#EC4899'},
+  ];
+  return (
+    <div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+        <div style={{fontSize:10,color:'#4F46E5',fontWeight:700,letterSpacing:'0.1em'}}>DENEME ANALİZİ</div>
+        <div style={{background:'rgba(79,70,229,.2)',border:'1px solid rgba(79,70,229,.4)',borderRadius:6,padding:'3px 10px',fontSize:10,color:'#818CF8',fontWeight:600}}>Net: 120.00</div>
+      </div>
+      {branches.map((b,i) => {
+        const net = b.correct - b.wrong/4;
+        const pct = Math.round((b.correct/(b.correct+b.wrong))*100);
+        return (
+          <div key={i} style={{marginBottom:10}}>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:3}}>
+              <span style={{fontSize:11,color:'#94A3B8'}}>{b.name}</span>
+              <span style={{fontSize:11,color:b.color,fontWeight:600}}>+{net.toFixed(1)} net</span>
+            </div>
+            <div style={{height:4,background:'rgba(255,255,255,.07)',borderRadius:4,overflow:'hidden'}}>
+              <div style={{height:'100%',width:`${pct}%`,background:b.color,borderRadius:4,transition:'width 1s ease'}}/>
+            </div>
+          </div>
+        );
+      })}
+      <div style={{marginTop:12,background:'rgba(34,197,94,.08)',border:'1px solid rgba(34,197,94,.2)',borderRadius:8,padding:'8px 10px'}}>
+        <div style={{fontSize:10,color:'#22C55E',fontWeight:700}}>🤖 YZ ANALİZİ</div>
+        <div style={{fontSize:10,color:'#94A3B8',marginTop:3}}>Geometri konularında ilerleme diğer branşlara göre daha düşük.</div>
+      </div>
+    </div>
+  );
+}
+
+function AIPlanlayiciView() {
+  const days = ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
+  const tasks = [null, null, [{s:'Geometri',c:'#4F46E5'},{s:'Fizik',c:'#22C55E'}], [{s:'Türkçe',c:'#F59E0B'}], null, [{s:'Kimya',c:'#EC4899'},{s:'Mat',c:'#4F46E5'}], null];
+  return (
+    <div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+        <div>
+          <div style={{fontSize:10,color:'#4F46E5',fontWeight:700,letterSpacing:'0.1em'}}>HAFTALIK AKILLI PLANLAYICI</div>
+          <div style={{fontSize:9,color:'#64748B'}}>Yapay zeka tarafından önerilen</div>
+        </div>
+        <div style={{background:'rgba(34,197,94,.2)',border:'1px solid rgba(34,197,94,.4)',borderRadius:6,padding:'3px 8px',fontSize:9,color:'#22C55E',fontWeight:700}}>✓ ONAYLA</div>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:4}}>
+        {days.map((d,i) => (
+          <div key={i}>
+            <div style={{textAlign:'center',fontSize:9,color: i===2 ? '#818CF8' : '#64748B',marginBottom:3,fontWeight: i===2 ? 700 : 400}}>{d}</div>
+            <div style={{
+              background: i===2 ? 'rgba(79,70,229,.15)' : 'rgba(255,255,255,.03)',
+              border:`1px solid ${i===2 ? 'rgba(79,70,229,.4)' : 'rgba(255,255,255,.06)'}`,
+              borderRadius:6, padding:'4px 3px', minHeight:70, display:'flex', flexDirection:'column', gap:2
+            }}>
+              {tasks[i] ? tasks[i].map((t,j) => (
+                <div key={j} style={{background:t.c+'33',border:`1px solid ${t.c}66`,borderRadius:3,padding:'2px 3px',fontSize:8,color:t.c,fontWeight:600,textAlign:'center'}}>{t.s}</div>
+              )) : <div style={{fontSize:8,color:'#1E293B',textAlign:'center',marginTop:8}}>—</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{marginTop:10,background:'rgba(255,255,255,.03)',borderRadius:8,padding:'8px',border:'1px solid rgba(255,255,255,.06)',display:'flex',gap:8,alignItems:'center'}}>
+        <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(135deg,#4F46E5,#7C3AED)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,flexShrink:0}}>🤖</div>
+        <div style={{fontSize:10,color:'#94A3B8'}}>Saat 23:04 virajındayız! Geometri bloğuna odaklan.</div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── NAVBAR ─── */
+function Navbar({ tweaks }) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return (
+    <nav style={{
+      position:'fixed', top:0, left:0, right:0, zIndex:100,
+      background: scrolled ? 'rgba(11,17,32,.95)' : 'transparent',
+      backdropFilter: scrolled ? 'blur(20px)' : 'none',
+      borderBottom: scrolled ? '1px solid rgba(255,255,255,.08)' : 'none',
+      transition:'all .3s ease',
+      padding:'0 24px',
+    }}>
+      <div style={{maxWidth:1200, margin:'0 auto', height:64, display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <div style={{width:32,height:32,background:'linear-gradient(135deg,#4F46E5,#7C3AED)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <IconCompass />
+          </div>
+          <span style={{fontWeight:800, fontSize:18, letterSpacing:'-0.02em'}}>Pusula <span style={{color:'#818CF8'}}>YKS</span></span>
+        </div>
+        <div style={{display:'flex',gap:32}}>
+          {['Özellikler','Nasıl Çalışır','Fiyatlandırma'].map(l => (
+            <a key={l} href={`#${l.toLowerCase().replace(' ','-')}`} className="nav-link"
+              style={{fontSize:14, color:'#94A3B8', textDecoration:'none', fontWeight:500}}>{l}</a>
+          ))}
+        </div>
+        <a href="https://www.shopier.com/pusulayks/46419461" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}>
+          <button className="gradient-btn" style={{
+            position:'relative', zIndex:1,
+            color:'white', border:'none', borderRadius:10, padding:'10px 22px',
+            fontFamily:'Inter,sans-serif', fontSize:14, fontWeight:600, cursor:'pointer',
+            letterSpacing:'-0.01em'
+          }}>
+            {tweaks.ctaText}
+          </button>
+        </a>
+      </div>
+    </nav>
+  );
+}
+
+/* ─── HERO ─── */
+function Hero({ tweaks }) {
+  const [typed, setTyped] = useState('');
+  const full = tweaks.heroTitle;
+  useEffect(() => {
+    let i = 0;
+    const t = setInterval(() => {
+      setTyped(full.slice(0, i));
+      i++;
+      if (i > full.length) clearInterval(t);
+    }, 28);
+    return () => clearInterval(t);
+  }, [full]);
+
+  return (
+    <section style={{
+      minHeight:'100vh', display:'flex', alignItems:'center',
+      padding:'80px 24px 40px',
+      background:'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(79,70,229,.15) 0%, transparent 70%)',
+      position:'relative', overflow:'hidden'
+    }}>
+      {/* Background grid */}
+      <div style={{
+        position:'absolute', inset:0, zIndex:0,
+        backgroundImage:`linear-gradient(rgba(79,70,229,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,.06) 1px, transparent 1px)`,
+        backgroundSize:'60px 60px',
+        maskImage:'radial-gradient(ellipse 80% 80% at center, black 40%, transparent 100%)'
+      }}/>
+      {/* Glow orbs */}
+      <div style={{position:'absolute',top:'20%',left:'5%',width:400,height:400,background:'rgba(79,70,229,.08)',borderRadius:'50%',filter:'blur(80px)',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',bottom:'20%',right:'5%',width:300,height:300,background:'rgba(124,58,237,.06)',borderRadius:'50%',filter:'blur(80px)',pointerEvents:'none'}}/>
+
+      <div style={{maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:'1fr 1fr', gap:64, alignItems:'center', position:'relative', zIndex:1, width:'100%'}}>
+        {/* Left */}
+        <div className="animate-fade-up">
+          <div style={{
+            display:'inline-flex', alignItems:'center', gap:8,
+            background:'rgba(79,70,229,.12)', border:'1px solid rgba(79,70,229,.3)',
+            borderRadius:100, padding:'6px 14px', marginBottom:24
+          }}>
+            <span style={{width:6,height:6,borderRadius:'50%',background:'#22C55E',animation:'blink 1.5s infinite',display:'inline-block'}}/>
+            <span style={{fontSize:12,color:'#818CF8',fontWeight:600,letterSpacing:'0.05em'}}>2026 YKS MÜFREDATıNA TAM UYUMLU</span>
+          </div>
+
+          <h1 style={{fontSize:'clamp(32px,4vw,54px)', fontWeight:900, lineHeight:1.1, letterSpacing:'-0.03em', marginBottom:24, minHeight:'2.4em'}}>
+            {typed}
+            <span style={{animation:'blink 1s infinite',display:'inline-block',width:3,height:'0.85em',background:'#4F46E5',marginLeft:2,verticalAlign:'middle'}}/>
+          </h1>
+
+          <p style={{fontSize:17, color:'#94A3B8', lineHeight:1.75, marginBottom:36, maxWidth:500}}>
+            Yapay zeka destekli dijital koçun <strong style={{color:'#E2E8F0'}}>Pusula YKS</strong> ile günlük planını optimize et, denemelerini analiz et ve net projektörü ile sıfırdan hedefe giden yolu gör.
+          </p>
+
+          <div style={{display:'flex', gap:14, alignItems:'center', flexWrap:'wrap'}}>
+            <a href="https://www.shopier.com/pusulayks/46419461" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}>
+            <button className="gradient-btn" style={{
+              position:'relative', zIndex:1,
+              color:'white', border:'none', borderRadius:12, padding:'15px 32px',
+              fontFamily:'Inter,sans-serif', fontSize:16, fontWeight:700, cursor:'pointer',
+              letterSpacing:'-0.01em', animation:'pulse-glow 2s ease infinite'
+            }}>
+              🚀 {tweaks.ctaText}
+            </button>
+            </a>
+            <div style={{display:'flex', alignItems:'center', gap:12}}>
+              <div style={{display:'flex'}}>
+                {['#4F46E5','#7C3AED','#22C55E','#F59E0B','#EC4899'].map((c,i) => (
+                  <div key={i} style={{width:28,height:28,borderRadius:'50%',background:c,border:'2px solid #0B1120',marginLeft: i>0 ? -8 : 0}}/>
+                ))}
+              </div>
+              <div>
+                <div style={{fontSize:13,fontWeight:700,color:'#E2E8F0'}}>2,400+ öğrenci</div>
+                <div style={{fontSize:11,color:'#64748B'}}>erken erişim listesinde</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{display:'flex', gap:24, marginTop:36}}>
+            {[{v:'%97',l:'Memnuniyet'},{v:'4.2x',l:'Verimlilik Artışı'}].map((s,i) => (
+              <div key={i}>
+                <div style={{fontSize:26,fontWeight:900,color:'#818CF8',letterSpacing:'-0.03em'}}>{s.v}</div>
+                <div style={{fontSize:11,color:'#64748B',marginTop:2}}>{s.l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right — App mockup */}
+        <div className="animate-float" style={{display:'flex', justifyContent:'center', animation:'float 5s ease-in-out infinite'}}>
+          <MiniDashboard />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── FEATURES ─── */
+function Features() {
+  const features = [
+    {
+      icon: <IconBrain />, color:'#4F46E5',
+      badge:'AI Analizi',
+      title:'Günlük AI Koç & Planlayıcı',
+      desc:'Bugün ne çalışacağım derdine son. Yapay zeka, eksiklerine göre günlük odaklanman gereken blokları belirler ve "Saat 23:04 virajındayız" gibi anlık motivasyon bildirimleri sunar.',
+      tags:['Akıllı Planlama','Bildirimler']
+    },
+    {
+      icon: <IconTarget />, color:'#7C3AED',
+      badge:'Net Analizi',
+      title:'Deneme & Branş Analizi',
+      desc:'TYT, AYT ve YDT denemelerinin kimliğini ve branş bazlı yanlışlarını gir. Algoritma müfredat vitesini otomatik güncellesin ve zayıf noktalarını göstersin.',
+      tags:['TYT','AYT','YDT']
+    },
+    {
+      icon: <IconChart />, color:'#22C55E',
+      badge:'Projeksiyon',
+      title:'Net Projektör & Unutma Eğrisi',
+      desc:'Sadece bugünü değil, geleceği gör. Geçmiş verilerine dayanarak hedefine ne zaman ulaşacağını gösteren projeksiyon grafikleri ve Ebbinghaus hafıza analizi.',
+      tags:['Ebbinghaus','Grafik','Projeksiyon']
+    },
+    {
+      icon: <IconMap />, color:'#F59E0B',
+      badge:'Yol Haritası',
+      title:'Kişiselleştirilmiş Yol Haritası',
+      desc:'Hedeflenen üniversiteye ne kadar kaldığını "Tahmini Bitiş" sayaçlarıyla anlık takip et. 53 Gün, 86 Konu Tamam — ne zaman hazır olacağını tam olarak bil.',
+      tags:['Sayaç','Hedef Takibi']
+    },
+  ];
+
+  return (
+    <section id="özellikler" style={{padding:'100px 24px', position:'relative'}}>
+      <div style={{
+        position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)',
+        width:'70%', height:'60%',
+        background:'radial-gradient(ellipse, rgba(79,70,229,.05) 0%, transparent 70%)',
+        pointerEvents:'none'
+      }}/>
+      <div style={{maxWidth:1200, margin:'0 auto'}}>
+        <div className="reveal" style={{textAlign:'center', marginBottom:64}}>
+          <div style={{display:'inline-block',background:'rgba(79,70,229,.12)',border:'1px solid rgba(79,70,229,.3)',borderRadius:100,padding:'5px 14px',marginBottom:16}}>
+            <span style={{fontSize:12,color:'#818CF8',fontWeight:600,letterSpacing:'0.08em'}}>NEDEN PUSULA YKS</span>
+          </div>
+          <h2 style={{fontSize:'clamp(28px,3.5vw,44px)', fontWeight:900, letterSpacing:'-0.03em', marginBottom:16}}>
+            Sınavı Hacklemek İçin<br/>
+            <span className="gradient-text">Dört Silahın Var</span>
+          </h2>
+          <p style={{fontSize:16, color:'#64748B', maxWidth:500, margin:'0 auto'}}>Sıradan bir çalışma uygulaması değil. Senin için optimize eden bir sistemin var.</p>
+        </div>
+
+        <div style={{display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:20}}>
+          {features.map((f,i) => (
+            <div key={i} className={`feature-card glass reveal scale d${i+1}`} style={{
+              borderRadius:16, padding:28,
+              border:`1px solid rgba(255,255,255,.07)`,
+              position:'relative', overflow:'hidden'
+            }}>
+              {/* Glow corner */}
+              <div style={{
+                position:'absolute',top:-40,right:-40,width:120,height:120,
+                background:f.color+'20',borderRadius:'50%',filter:'blur(30px)',pointerEvents:'none'
+              }}/>
+              <div style={{
+                width:54, height:54,
+                background:`${f.color}15`,
+                border:`1px solid ${f.color}40`,
+                borderRadius:14,
+                display:'flex', alignItems:'center', justifyContent:'center',
+                color:f.color, marginBottom:20
+              }}>
+                {f.icon}
+              </div>
+              <div style={{
+                display:'inline-block',
+                background:`${f.color}18`, border:`1px solid ${f.color}40`,
+                borderRadius:6, padding:'2px 8px', fontSize:10, fontWeight:700,
+                color:f.color, marginBottom:10, letterSpacing:'0.06em'
+              }}>{f.badge}</div>
+              <h3 style={{fontSize:19, fontWeight:800, marginBottom:10, letterSpacing:'-0.02em'}}>{f.title}</h3>
+              <p style={{fontSize:14, color:'#64748B', lineHeight:1.7, marginBottom:16}}>{f.desc}</p>
+              <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
+                {f.tags.map(t => (
+                  <span key={t} style={{
+                    background:'rgba(255,255,255,.05)', border:'1px solid rgba(255,255,255,.1)',
+                    borderRadius:6, padding:'3px 8px', fontSize:11, color:'#94A3B8'
+                  }}>{t}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── HOW IT WORKS ─── */
+function HowItWorks() {
+  const steps = [
+    {n:'01', icon:'🎯', title:'Seviyeni ve Hedefini Belirle', desc:'Mevcut net durumunu gir, hedef üniversiteni seç. AI motorun senin için kişisel bir yol haritası çizer.'},
+    {n:'02', icon:'🤖', title:'AI Koçunun Planına Uy', desc:'Her sabah sana özel günlük görevler. Yapay zeka, haftalık akışını ve odak bloklarını otomatik optimize eder.'},
+    {n:'03', icon:'📈', title:'Netlerinin Uçuşunu İzle', desc:'Gelişmiş skorboard, projeksiyon grafikler ve Ebbinghaus analizi ile her geçen gün hedefine ne kadar yaklaştığını gör.'},
+  ];
+
+  return (
+    <section id="nasıl-çalışır" style={{padding:'100px 24px', background:'linear-gradient(180deg, transparent 0%, rgba(15,23,42,.8) 50%, transparent 100%)'}}>
+      <div style={{maxWidth:1200, margin:'0 auto'}}>
+        <div className="reveal" style={{textAlign:'center', marginBottom:64}}>
+          <div style={{display:'inline-block',background:'rgba(34,197,94,.1)',border:'1px solid rgba(34,197,94,.3)',borderRadius:100,padding:'5px 14px',marginBottom:16}}>
+            <span style={{fontSize:12,color:'#22C55E',fontWeight:600,letterSpacing:'0.08em'}}>3 ADIMDA PUSULA YKS</span>
+          </div>
+          <h2 style={{fontSize:'clamp(28px,3.5vw,44px)', fontWeight:900, letterSpacing:'-0.03em'}}>
+            Nasıl Çalışır?
+          </h2>
+        </div>
+
+        <div style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:0, position:'relative'}}>
+          {/* Connecting line */}
+          <div style={{position:'absolute', top:52, left:'17%', width:'66%', height:2, background:'linear-gradient(90deg, #4F46E5, #7C3AED, #4F46E5)', opacity:.3, zIndex:0}}/>
+
+          {steps.map((s,i) => (
+            <div key={i} className={`reveal d${i+1}`} style={{textAlign:'center', padding:'0 24px', position:'relative', zIndex:1}}>
+              <div style={{
+                width:68, height:68,
+                background: i===1 ? 'linear-gradient(135deg,#4F46E5,#7C3AED)' : 'rgba(79,70,229,.12)',
+                border:`2px solid ${i===1 ? 'transparent' : 'rgba(79,70,229,.3)'}`,
+                borderRadius:'50%',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                margin:'0 auto 24px',
+                fontSize:28,
+                boxShadow: i===1 ? '0 0 30px rgba(79,70,229,.5)' : 'none'
+              }}>
+                {s.icon}
+              </div>
+              <div style={{fontSize:11,color:'#4F46E5',fontWeight:800,letterSpacing:'0.12em',marginBottom:8}}>ADIM {s.n}</div>
+              <h3 style={{fontSize:18, fontWeight:800, marginBottom:12, letterSpacing:'-0.02em'}}>{s.title}</h3>
+              <p style={{fontSize:14, color:'#64748B', lineHeight:1.7}}>{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── SOCIAL PROOF ─── */
+function SocialProof({ tweaks }) {
+  if (!tweaks.showTestimonials) return null;
+  const testimonials = [
+    {name:'Zeynep K.', school:'', score:'+42 Net', avatar:'#4F46E5', text:'"Geometri\'de neden takıldığımı ilk kez bir uygulama gösterdi. AI analizi gerçekten çalışıyor."'},
+    {name:'Ahmet D.', school:'', score:'+38 Net', avatar:'#7C3AED', text:'"Net projektör ile 2 ay öncesinden hedefime ulaşacağımı gördüm. O motivasyonla çalıştım."'},
+    {name:'Selin M.', school:'', score:'+55 Net', avatar:'#22C55E', text:'"Günlük planı takip etmek bu kadar kolay olmamıştı. Artık ne çalışacağımı düşünmüyorum."'},
+  ];
+
+  return (
+    <section style={{padding:'80px 24px'}}>
+      <div style={{maxWidth:1200, margin:'0 auto'}}>
+        <div className="reveal" style={{textAlign:'center', marginBottom:48}}>
+          <h2 style={{fontSize:'clamp(24px,3vw,38px)', fontWeight:900, letterSpacing:'-0.03em'}}>
+            Öğrenciler Ne Diyor?
+          </h2>
+          <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:4, marginTop:12}}>
+            {[1,2,3,4,5].map(i => <span key={i} style={{color:'#F59E0B', fontSize:18}}>★</span>)}
+            <span style={{fontSize:14, color:'#64748B', marginLeft:8}}>4.9 / 5.0 ortalama</span>
+          </div>
+        </div>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20}}>
+          {testimonials.map((t,i) => (
+            <div key={i} className={`testimonial-card glass reveal scale d${i+1}`} style={{
+              borderRadius:16, padding:24,
+              border:'1px solid rgba(255,255,255,.07)'
+            }}>
+              <p style={{fontSize:14, color:'#94A3B8', lineHeight:1.8, marginBottom:20, fontStyle:'italic'}}>{t.text}</p>
+              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+                <div style={{display:'flex', alignItems:'center', gap:10}}>
+                  <div style={{width:36,height:36,borderRadius:'50%',background:t.avatar,display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:700}}>
+                    {t.name[0]}
+                  </div>
+                  <div>
+                    <div style={{fontSize:13, fontWeight:700}}>{t.name}</div>
+                    <div style={{fontSize:11, color:'#64748B'}}>{t.school}</div>
+                  </div>
+                </div>
+                <div style={{background:'rgba(34,197,94,.15)',border:'1px solid rgba(34,197,94,.3)',borderRadius:8,padding:'4px 10px',fontSize:13,fontWeight:800,color:'#22C55E'}}>
+                  {t.score}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Trust badges */}
+        <div style={{display:'flex', justifyContent:'center', gap:32, marginTop:48, flexWrap:'wrap'}}>
+          {[
+            {icon:'⚡', label:'Kesintisiz Odaklanma'},
+            {icon:'🔒', label:'Sıfır Gecikme'},
+            {icon:'📱', label:'Mobil Uyumlu'},
+            {icon:'🇹🇷', label:'Türkçe Destek'},
+          ].map((b,i) => (
+            <div key={i} style={{display:'flex', alignItems:'center', gap:8}}>
+              <span style={{fontSize:20}}>{b.icon}</span>
+              <span style={{fontSize:13, color:'#64748B', fontWeight:500}}>{b.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── PRICING ─── */
+function Pricing() {
+  const starterFeatures = [
+    '3 gün boyunca tam yapay zeka erişimi',
+    'Başarı Simülatörü testi',
+    'Temel haftalık planlama',
+  ];
+  const proFeatures = [
+    'Sınava kadar Sınırsız AI Planlama',
+    'Optimum Rota (Zaman emici konuları ele)',
+    'Zaman/Bilgi Ayrımı Yapan Deneme Analizi',
+    'Savaş Öncesi İstihbarat & Odak Modu',
+    'Öncelikli teknik destek',
+  ];
+
+  return (
+    <section id="fiyatlandırma" style={{padding:'100px 24px', position:'relative', overflow:'hidden'}}>
+      {/* Ambient glow */}
+      <div style={{position:'absolute',top:'40%',left:'50%',transform:'translate(-50%,-50%)',width:700,height:400,background:'radial-gradient(ellipse, rgba(79,70,229,.08) 0%, transparent 70%)',pointerEvents:'none'}}/>
+
+      <div style={{maxWidth:900, margin:'0 auto', position:'relative', zIndex:1}}>
+        {/* Header */}
+        <div className="reveal" style={{textAlign:'center', marginBottom:56}}>
+          <div style={{display:'inline-block',background:'rgba(79,70,229,.12)',border:'1px solid rgba(79,70,229,.3)',borderRadius:100,padding:'5px 14px',marginBottom:16}}>
+            <span style={{fontSize:12,color:'#818CF8',fontWeight:600,letterSpacing:'0.08em'}}>FİYATLANDIRMA</span>
+          </div>
+          <h2 style={{fontSize:'clamp(26px,3.5vw,42px)', fontWeight:900, letterSpacing:'-0.03em', lineHeight:1.15, marginBottom:16}}>
+            Hedefine Ulaşmak İçin<br/>
+            <span className="gradient-text">Tek Bir Adım</span>
+          </h2>
+          <p style={{fontSize:15, color:'#64748B', maxWidth:520, margin:'0 auto', lineHeight:1.75}}>
+            Abonelik yok, sürpriz kesinti yok. YKS'ye kadar tek seferlik ödeme ile tüm yapay zeka gücünü serbest bırak.
+          </p>
+        </div>
+
+        {/* Cards */}
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1.08fr', gap:20, alignItems:'center'}}>
+
+          {/* Starter */}
+          <div className="glass feature-card reveal left" style={{
+            borderRadius:20, padding:'32px 28px',
+            border:'1px solid rgba(255,255,255,.08)',
+          }}>
+            <div style={{fontSize:12, color:'#64748B', fontWeight:700, letterSpacing:'0.1em', marginBottom:12}}>BAŞLANGIÇ</div>
+            <div style={{fontSize:22, fontWeight:800, letterSpacing:'-0.02em', marginBottom:20}}>3 Günlük Deneme</div>
+
+            <div style={{marginBottom:6}}>
+              <span style={{fontSize:48, fontWeight:900, letterSpacing:'-0.04em', color:'#E2E8F0'}}>0</span>
+              <span style={{fontSize:22, fontWeight:700, color:'#94A3B8', marginLeft:2}}>TL</span>
+            </div>
+            <div style={{fontSize:12, color:'#475569', marginBottom:28}}>Kredi kartı gerekmez.</div>
+
+            <div style={{borderTop:'1px solid rgba(255,255,255,.06)', paddingTop:24, marginBottom:28}}>
+              {starterFeatures.map((f,i) => (
+                <div key={i} style={{display:'flex', alignItems:'flex-start', gap:10, marginBottom:12}}>
+                  <div style={{width:18, height:18, borderRadius:'50%', border:'1.5px solid #475569', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1}}>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path d="M2 5L4.2 7.2L8 3" stroke="#64748B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <span style={{fontSize:13, color:'#64748B', lineHeight:1.6}}>{f}</span>
+                </div>
+              ))}
+            </div>
+
+            <button style={{
+              width:'100%', padding:'13px', borderRadius:12,
+              background:'transparent',
+              border:'1.5px solid rgba(255,255,255,.18)',
+              color:'#94A3B8', fontFamily:'Inter,sans-serif',
+              fontSize:14, fontWeight:700, cursor:'pointer',
+              transition:'all .25s ease',
+              letterSpacing:'-0.01em'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.35)'; e.currentTarget.style.color='#E2E8F0'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.18)'; e.currentTarget.style.color='#94A3B8'; }}
+            >
+              Ücretsiz Başla
+            </button>
+          </div>
+
+          {/* PRO */}
+          <div className="reveal right" style={{
+            borderRadius:22,
+            padding:'36px 32px',
+            background:'linear-gradient(145deg, rgba(79,70,229,.14) 0%, rgba(124,58,237,.1) 100%)',
+            border:'1.5px solid rgba(99,102,241,.45)',
+            boxShadow:'0 0 0 1px rgba(99,102,241,.15), 0 0 50px rgba(79,70,229,.18), inset 0 1px 0 rgba(255,255,255,.08)',
+            position:'relative', overflow:'hidden',
+            transition:'all .35s cubic-bezier(.25,.46,.45,.94)'
+          }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow='0 0 0 1px rgba(99,102,241,.3), 0 0 80px rgba(79,70,229,.3), inset 0 1px 0 rgba(255,255,255,.1)'; e.currentTarget.style.transform='translateY(-4px)'; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow='0 0 0 1px rgba(99,102,241,.15), 0 0 50px rgba(79,70,229,.18), inset 0 1px 0 rgba(255,255,255,.08)'; e.currentTarget.style.transform='translateY(0)'; }}
+          >
+            {/* Shimmer top line */}
+            <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,transparent,#818CF8,#A78BFA,transparent)',opacity:.8}}/>
+            {/* Corner glow */}
+            <div style={{position:'absolute',top:-30,right:-30,width:160,height:160,background:'radial-gradient(circle,rgba(124,58,237,.25),transparent 70%)',pointerEvents:'none'}}/>
+
+            {/* Badge */}
+            <div style={{marginBottom:16}}>
+              <span style={{
+                display:'inline-flex', alignItems:'center', gap:5,
+                background:'linear-gradient(135deg,#4F46E5,#7C3AED)',
+                borderRadius:100, padding:'5px 14px',
+                fontSize:11, fontWeight:800, color:'white',
+                letterSpacing:'0.07em',
+                boxShadow:'0 4px 16px rgba(79,70,229,.4)'
+              }}>
+                <span style={{width:6,height:6,borderRadius:'50%',background:'#22C55E',display:'inline-block'}}/>
+                EN POPÜLER
+              </span>
+            </div>
+
+            <div style={{fontSize:12, color:'#818CF8', fontWeight:700, letterSpacing:'0.1em', marginBottom:10}}>PRO PAKET</div>
+            <div style={{fontSize:22, fontWeight:800, letterSpacing:'-0.02em', marginBottom:20, color:'#E2E8F0'}}>Pusula YKS PRO</div>
+
+            <div style={{marginBottom:4, display:'flex', alignItems:'flex-end', gap:6}}>
+              <span style={{fontSize:56, fontWeight:900, letterSpacing:'-0.04em', lineHeight:1, background:'linear-gradient(135deg,#818CF8,#A78BFA)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text'}}>499</span>
+              <span style={{fontSize:22, fontWeight:700, color:'#818CF8', marginBottom:8}}>TL</span>
+            </div>
+            <div style={{fontSize:12, color:'#64748B', marginBottom:28}}>Tek Seferlik Ödeme / Sınava Kadar Erişim</div>
+
+            <div style={{borderTop:'1px solid rgba(99,102,241,.2)', paddingTop:24, marginBottom:28}}>
+              {proFeatures.map((f,i) => (
+                <div key={i} style={{display:'flex', alignItems:'flex-start', gap:10, marginBottom:13}}>
+                  <div style={{width:18, height:18, borderRadius:'50%', background:'linear-gradient(135deg,#4F46E5,#7C3AED)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1}}>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path d="M2 5L4.2 7.2L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <span style={{fontSize:13, color:'#CBD5E1', lineHeight:1.6}}>{f}</span>
+                </div>
+              ))}
+            </div>
+
+            <a href="https://www.shopier.com/pusulayks/46419461" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none',display:'block'}}>
+            <button className="gradient-btn" style={{
+              width:'100%', padding:'15px', borderRadius:12,
+              border:'none', color:'white', fontFamily:'Inter,sans-serif',
+              fontSize:15, fontWeight:700, cursor:'pointer',
+              letterSpacing:'-0.01em', position:'relative', zIndex:1,
+              boxShadow:'0 8px 30px rgba(79,70,229,.45)'
+            }}>
+              🚀 Sınava Kadar PRO Ol
+            </button>
+            </a>
+
+      
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── FINAL CTA ─── */
+function FinalCTA({ tweaks }) {
+  const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  return (
+    <section style={{
+      padding:'100px 24px',
+      background:'linear-gradient(180deg, transparent, rgba(79,70,229,.08) 50%, transparent)',
+      position:'relative', overflow:'hidden'
+    }}>
+      <div style={{
+        position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)',
+        width:600, height:600,
+        background:'radial-gradient(circle, rgba(79,70,229,.1) 0%, transparent 70%)',
+        pointerEvents:'none'
+      }}/>
+      <div className="reveal" style={{maxWidth:680, margin:'0 auto', textAlign:'center', position:'relative', zIndex:1}}>
+        <div style={{fontSize:48, marginBottom:16}}>🧭</div>
+        <h2 style={{fontSize:'clamp(28px,4vw,48px)', fontWeight:900, letterSpacing:'-0.03em', lineHeight:1.15, marginBottom:20}}>
+          Zamanı Yöneten,<br/>
+          <span className="gradient-text">Sınavı Kazanır.</span>
+        </h2>
+        <p style={{fontSize:16, color:'#64748B', lineHeight:1.75, marginBottom:40}}>
+          Kendi yol haritanı çizmeye başla. Pusula YKS ile 2026 sınavına veri odaklı hazırlan.
+        </p>
+
+        {submitted ? (
+          <div style={{
+            background:'rgba(34,197,94,.12)', border:'1px solid rgba(34,197,94,.4)',
+            borderRadius:16, padding:'24px 32px'
+          }}>
+            <div style={{fontSize:32, marginBottom:8}}>✅</div>
+            <div style={{fontSize:18, fontWeight:700, color:'#22C55E'}}>Listeye eklendin!</div>
+            <div style={{fontSize:14, color:'#64748B', marginTop:4}}>Erken erişim açıldığında seni ilk haberdar edeceğiz.</div>
+          </div>
+        ) : (
+          <div style={{display:'flex', gap:10, maxWidth:440, margin:'0 auto'}}>
+            <input
+              type="email"
+              placeholder="E-posta adresin"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              style={{
+                flex:1, background:'rgba(255,255,255,.06)',
+                border:'1px solid rgba(255,255,255,.15)',
+                borderRadius:12, padding:'14px 18px',
+                color:'white', fontFamily:'Inter,sans-serif', fontSize:15,
+                outline:'none'
+              }}
+            />
+            <button
+              onClick={() => { if(email) { window.open('https://www.shopier.com/pusulayks/46419461','_blank'); setSubmitted(true); } }}
+              className="gradient-btn"
+              style={{
+                position:'relative', zIndex:1, flexShrink:0,
+                color:'white', border:'none', borderRadius:12, padding:'14px 24px',
+                fontFamily:'Inter,sans-serif', fontSize:15, fontWeight:700, cursor:'pointer',
+                whiteSpace:'nowrap'
+              }}
+            >
+              Hemen Başla
+            </button>
+          </div>
+        )}
+
+        <div style={{fontSize:12, color:'#475569', marginTop:16}}>
+          Kredi kartı gerekmez · Ücretsiz erken erişim
+        </div>
+
+        {/* Mobile App Coming Soon */}
+        <div style={{marginTop:48, display:'flex', flexDirection:'column', alignItems:'center', gap:16}}>
+          <div style={{position:'relative', display:'inline-block'}}>
+            <span style={{
+              display:'inline-flex', alignItems:'center', gap:5,
+              background:'rgba(79,70,229,.15)', border:'1px solid rgba(99,102,241,.5)',
+              borderRadius:100, padding:'4px 12px',
+              fontSize:10, fontWeight:800, color:'#818CF8',
+              letterSpacing:'0.1em',
+              boxShadow:'0 0 12px rgba(79,70,229,.3), 0 0 24px rgba(79,70,229,.15)',
+              animation:'pulse-glow 2s ease infinite'
+            }}>
+              <span style={{width:5,height:5,borderRadius:'50%',background:'#A78BFA',display:'inline-block'}}/>
+              ÇOK YAKINDA
+            </span>
+          </div>
+
+          <div style={{display:'flex', gap:12}}>
+            {/* App Store */}
+            <div style={{
+              opacity:.5,
+              background:'rgba(255,255,255,.04)',
+              backdropFilter:'blur(12px)',
+              border:'1px solid rgba(255,255,255,.1)',
+              borderRadius:12, padding:'10px 18px',
+              display:'flex', alignItems:'center', gap:10,
+              cursor:'default', userSelect:'none'
+            }}>
+              <svg width="20" height="24" viewBox="0 0 20 24" fill="#E2E8F0">
+                <path d="M14.94 5.19A4.38 4.38 0 0 0 16 2a4.44 4.44 0 0 0-3 1.52 4.17 4.17 0 0 0-1 3.09 3.69 3.69 0 0 0 2.94-1.42zm2.52 7.44a4.51 4.51 0 0 1 2.16-3.81 4.66 4.66 0 0 0-3.66-2c-1.56-.16-3 .91-3.83.91-.83 0-2-.89-3.3-.87A4.92 4.92 0 0 0 4.69 9.4C2.93 12.45 4.24 17 6 19.47c.8 1.21 1.8 2.59 3.12 2.54 1.23-.05 1.72-.81 3.22-.81 1.5 0 1.9.81 3.22.79 1.32-.02 2.22-1.24 3.06-2.45a11 11 0 0 0 1.38-2.85 4.41 4.41 0 0 1-2.54-4.06z"/>
+              </svg>
+              <div style={{textAlign:'left'}}>
+                <div style={{fontSize:9, color:'#94A3B8', fontWeight:500, letterSpacing:'0.05em'}}>DOWNLOAD ON THE</div>
+                <div style={{fontSize:14, color:'#E2E8F0', fontWeight:700, lineHeight:1.2}}>App Store</div>
+              </div>
+            </div>
+
+            {/* Google Play */}
+            <div style={{
+              opacity:.5,
+              background:'rgba(255,255,255,.04)',
+              backdropFilter:'blur(12px)',
+              border:'1px solid rgba(255,255,255,.1)',
+              borderRadius:12, padding:'10px 18px',
+              display:'flex', alignItems:'center', gap:10,
+              cursor:'default', userSelect:'none'
+            }}>
+              <svg width="21" height="24" viewBox="0 0 21 24" fill="none">
+                <path d="M1.22.84 12.2 12 1.22 23.16A2 2 0 0 1 0 21.38V2.62A2 2 0 0 1 1.22.84z" fill="#EA4335"/>
+                <path d="M17.56 9.86 14.4 12l3.16 2.14 2.94-1.7a1 1 0 0 0 0-1.88l-2.94-1.7z" fill="#FBBC04"/>
+                <path d="M12.2 12 1.22.84l13.18 7.58L12.2 12z" fill="#4285F4"/>
+                <path d="M12.2 12l2.2 2.58L1.22 23.16 12.2 12z" fill="#34A853"/>
+              </svg>
+              <div style={{textAlign:'left'}}>
+                <div style={{fontSize:9, color:'#94A3B8', fontWeight:500, letterSpacing:'0.05em'}}>GET IT ON</div>
+                <div style={{fontSize:14, color:'#E2E8F0', fontWeight:700, lineHeight:1.2}}>Google Play</div>
+              </div>
+            </div>
+          </div>
+
+          <p style={{fontSize:12, color:'#334155', letterSpacing:'0.02em', fontWeight:400}}>
+            Pusula YKS tüm gücüyle çok yakında telefon ve tabletinizde.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── FOOTER ─── */
+function Footer() {
+  return (
+    <footer style={{borderTop:'1px solid rgba(255,255,255,.07)', padding:'40px 24px'}}>
+      <div style={{maxWidth:1200, margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:20}}>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <div style={{width:28,height:28,background:'linear-gradient(135deg,#4F46E5,#7C3AED)',borderRadius:7,display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <IconCompass />
+          </div>
+          <span style={{fontWeight:800, fontSize:16, letterSpacing:'-0.02em'}}>Pusula <span style={{color:'#818CF8'}}>YKS</span></span>
+        </div>
+        <div style={{fontSize:13, color:'#475569'}}>© 2026 Pusula YKS. Tüm hakları saklıdır.</div>
+        <div style={{display:'flex',gap:24}}>
+          {['Gizlilik','Kullanım Koşulları','İletişim'].map(l => (
+            <a key={l} href="#" style={{fontSize:13, color:'#475569', textDecoration:'none', transition:'color .2s'}}
+               onMouseEnter={e => e.target.style.color='#818CF8'}
+               onMouseLeave={e => e.target.style.color='#475569'}>{l}</a>
+          ))}
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ─── TWEAKS PANEL ─── */
+function TweaksPanel({ tweaks, setTweaks, visible }) {
+  if (!visible) return null;
+  return (
+    <div style={{
+      position:'fixed', bottom:24, right:24, zIndex:999,
+      background:'rgba(15,23,42,.95)', backdropFilter:'blur(20px)',
+      border:'1px solid rgba(79,70,229,.4)', borderRadius:16,
+      padding:20, width:260,
+      boxShadow:'0 20px 60px rgba(0,0,0,.6)'
+    }}>
+      <div style={{fontSize:13,fontWeight:700,color:'#818CF8',marginBottom:16,letterSpacing:'0.06em'}}>TWEAKS</div>
+      
+      <label style={{fontSize:12,color:'#64748B',display:'block',marginBottom:6}}>Buton Metni</label>
+      <input value={tweaks.ctaText} onChange={e => setTweaks({...tweaks,ctaText:e.target.value})}
+        style={{width:'100%',background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:8,padding:'7px 10px',color:'white',fontFamily:'Inter,sans-serif',fontSize:12,outline:'none',marginBottom:14}}/>
+      
+      <label style={{fontSize:12,color:'#64748B',display:'block',marginBottom:6}}>Ana Renk</label>
+      <div style={{display:'flex',gap:8,marginBottom:14}}>
+        {['#4F46E5','#7C3AED','#0EA5E9','#10B981','#F59E0B'].map(c => (
+          <div key={c} onClick={() => setTweaks({...tweaks,accentColor:c})}
+            style={{width:24,height:24,borderRadius:'50%',background:c,cursor:'pointer',
+              border: tweaks.accentColor===c ? '2px solid white' : '2px solid transparent'}}/>
+        ))}
+      </div>
+
+      <label style={{fontSize:12,color:'#64748B',display:'flex',alignItems:'center',gap:8,cursor:'pointer'}}>
+        <input type="checkbox" checked={tweaks.showTestimonials} onChange={e => setTweaks({...tweaks,showTestimonials:e.target.checked})} style={{accentColor:'#4F46E5'}}/>
+        Yorumları Göster
+      </label>
+    </div>
+  );
+}
+
+/* ─── SCROLL REVEAL HOOK ─── */
+function useReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    els.forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
+/* ─── APP ─── */
+function App() {
+  const [tweaks, setTweaks] = useState(TWEAK_DEFAULTS);
+  const [tweaksVisible, setTweaksVisible] = useState(false);
+  useReveal();
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.data?.type === '__activate_edit_mode') setTweaksVisible(true);
+      if (e.data?.type === '__deactivate_edit_mode') setTweaksVisible(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({type:'__edit_mode_available'}, '*');
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  useEffect(() => {
+    if (tweaksVisible) {
+      window.parent.postMessage({type:'__edit_mode_set_keys', edits: tweaks}, '*');
+      const root = document.documentElement;
+      root.style.setProperty('--accent', tweaks.accentColor);
+    }
+  }, [tweaks, tweaksVisible]);
+
+  return (
+    <>
+      <Navbar tweaks={tweaks} />
+      <Hero tweaks={tweaks} />
+      <Features />
+      <HowItWorks />
+      <SocialProof tweaks={tweaks} />
+      <Pricing />
+      <FinalCTA tweaks={tweaks} />
+      <Footer />
+      <TweaksPanel tweaks={tweaks} setTweaks={setTweaks} visible={tweaksVisible} />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
