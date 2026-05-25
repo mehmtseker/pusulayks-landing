@@ -10,6 +10,7 @@
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -133,7 +134,7 @@
     .footer-container { flex-direction: column !important; text-align: center !important; gap: 20px !important; }
     
     section { padding: 60px 16px !important; }
-    .hero-section { padding: 100px 16px 40px !important; }
+    .hero-section { padding: 130px 16px 40px !important; }
 
     .app-mockup-wrapper { position: relative !important; width: 100% !important; display: block !important; height: 350px; }
     .app-mockup-scale { transform: scale(0.8); transform-origin: center top; width: 100%; height: 100%; display: block !important; }
@@ -165,8 +166,10 @@ const { useState, useEffect, useRef } = React;
 /* ─── TWEAK DEFAULTS ─── */
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accentColor": "#4F46E5",
-  "heroTitle": "YKS Sınav Yılını Şansa Değil, AI Koçuna Bırak.",
-  "ctaText": "Erken Erişime Katıl",
+  "heroTitle": "150.000 TL'lik Dershane Masrafını Çöpe At. Yapay Zeka ile 2027 YKS'ye Eksiksiz Hazırlan.",
+  "ctaText": "%60 Erken Kayıt Fırsatını Yakala",
+  "fomoText": "⚠️ 2027 YKS Kurucu Üye Fiyatı İçin Son 12 Saat!",
+  "kontenjan": 11,
   "showTestimonials": true,
   "darkMode": true
 }/*EDITMODE-END*/;
@@ -387,6 +390,185 @@ function AIPlanlayiciView() {
   );
 }
 
+/* ─── FOMO BANNER (12h live countdown) ─── */
+function FomoBanner({ tweaks }) {
+  const [remaining, setRemaining] = useState({h:'12',m:'00',s:'00'});
+
+  useEffect(() => {
+    const STORAGE_KEY = 'pusula_fomo_deadline';
+    const WINDOW_MS = 12 * 60 * 60 * 1000;
+
+    const safeGet = () => { try { return localStorage.getItem(STORAGE_KEY); } catch { return null; } };
+    const safeSet = (v) => { try { localStorage.setItem(STORAGE_KEY, v); } catch {} };
+
+    let deadline = parseInt(safeGet() || '0', 10);
+    const now = Date.now();
+    if (!deadline || deadline < now) {
+      deadline = now + WINDOW_MS;
+      safeSet(String(deadline));
+    }
+
+    const tick = () => {
+      let diff = deadline - Date.now();
+      if (diff <= 0) {
+        deadline = Date.now() + WINDOW_MS;
+        safeSet(String(deadline));
+        diff = WINDOW_MS;
+      }
+      const totalSec = Math.floor(diff / 1000);
+      const h = String(Math.floor(totalSec / 3600)).padStart(2,'0');
+      const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2,'0');
+      const s = String(totalSec % 60).padStart(2,'0');
+      setRemaining({h, m, s});
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-[110] bg-gradient-to-r from-red-600 via-orange-500 to-red-600 text-white shadow-[0_4px_24px_rgba(239,68,68,.45)]"
+         style={{fontFamily:'Inter,sans-serif'}}>
+      <div className="max-w-[1200px] mx-auto px-3 sm:px-4 py-1.5 sm:py-2 flex items-center justify-center gap-2 sm:gap-4 text-[11px] sm:text-[13px] font-bold tracking-tight flex-wrap">
+        <span className="hidden sm:inline whitespace-nowrap drop-shadow">
+          {tweaks?.fomoText || '⚠️ 2027 YKS Kurucu Üye Fiyatı İçin Son 12 Saat!'}
+        </span>
+        <span className="sm:hidden whitespace-nowrap text-[11px]">⚠️ Kurucu Üye Fiyatı Son 12 Saat!</span>
+
+        <span className="flex items-center gap-1 bg-black/30 border border-white/30 rounded-md px-2 py-0.5 font-mono tabular-nums tracking-wider ring-1 ring-white/20">
+          <span>{remaining.h}</span>:<span>{remaining.m}</span>:<span className="text-yellow-200">{remaining.s}</span>
+        </span>
+
+        <span className="hidden sm:inline opacity-50">·</span>
+
+        <span className="inline-flex items-center gap-1 bg-red-900/60 border border-red-300/40 rounded-md px-2 py-0.5 animate-pulse">
+          🔥 <span className="hidden sm:inline">Kalan</span> Kontenjan:&nbsp;<span className="text-yellow-200 font-extrabold">{tweaks?.kontenjan ?? 11}</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ─── PRICE COMPARISON (Hero altı) ─── */
+function PriceComparison() {
+  const classicItems = [
+    {i:'📚', t:'Yıllık dershane ücreti'},
+    {i:'👨‍🏫', t:'Haftalık özel ders saatleri'},
+    {i:'🏃', t:'Şehir içi ulaşım & yorgunluk'},
+    {i:'😩', t:'Karar yorgunluğu (bedava!)'},
+    {i:'💸', t:'Sürpriz ek ücretler & zamlar'},
+  ];
+  const proItems = [
+    {i:'🤖', t:'Sınırsız 7/24 AI planlama'},
+    {i:'📊', t:'Anlık net analizi & projektör'},
+    {i:'🗺️', t:'Sınava kadar kişisel yol haritası'},
+    {i:'⏱️', t:'Tek seferlik ödeme — aylık taksit yok'},
+    {i:'🎯', t:'Sınava kadar tam erişim, sürpriz yok'},
+  ];
+
+  return (
+    <section className="relative px-4 sm:px-6 py-16 sm:py-20">
+      <div className="absolute inset-0 pointer-events-none" style={{background:'radial-gradient(ellipse 60% 60% at 50% 30%, rgba(239,68,68,.06) 0%, transparent 70%)'}}/>
+      <div className="max-w-[1100px] mx-auto relative z-[1]">
+        <div className="text-center mb-10 sm:mb-14 reveal">
+          <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-400/30 rounded-full px-3 py-1 mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"/>
+            <span className="text-[11px] sm:text-xs font-bold tracking-wider text-red-300">DURDURUP 30 SANİYE OKU</span>
+          </div>
+          <h2 className="font-black tracking-tight leading-[1.15]" style={{fontSize:'clamp(24px,3.4vw,40px)'}}>
+            Velinin Cüzdanına 150.000 TL'lik <br className="hidden sm:block"/>
+            Bir Soru: <span className="bg-gradient-to-r from-emerald-300 to-indigo-300 bg-clip-text text-transparent">Hangisi Daha Akıllı?</span>
+          </h2>
+          <p className="text-slate-400 text-sm sm:text-base mt-3 max-w-xl mx-auto">Aynı hedef. İki yol. Aradaki fark, bir aile arabası fiyatı.</p>
+        </div>
+
+        <div className="grid md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 items-stretch">
+          {/* KLASİK — SOL */}
+          <div className="relative rounded-2xl border border-red-500/30 bg-gradient-to-br from-red-950/40 to-slate-950/60 p-6 sm:p-8 reveal left">
+            <div className="inline-flex items-center gap-1.5 bg-red-500/15 border border-red-400/30 rounded-md px-2.5 py-1 mb-4">
+              <span className="text-base leading-none">❌</span>
+              <span className="text-[11px] font-extrabold text-red-300 tracking-wider">KLASİK YÖNTEM</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-100 leading-tight mb-1">Yıllık Dershane + Özel Ders</h3>
+            <p className="text-xs text-slate-500 mb-6">Geleneksel rota — her sene aynı film.</p>
+
+            <ul className="space-y-2.5 mb-7">
+              {classicItems.map((it,i) => (
+                <li key={i} className="flex items-start gap-2.5 text-[13px] sm:text-sm text-slate-400">
+                  <span className="text-base leading-tight">{it.i}</span>
+                  <span className="leading-snug">{it.t}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="border-t border-red-500/15 pt-5">
+              <div className="text-[11px] text-red-300/80 font-bold tracking-wider mb-1">TAHMİNİ TOPLAM MASRAF</div>
+              <div className="flex items-end gap-2">
+                <span className="text-4xl sm:text-5xl font-black tracking-tighter text-red-300 line-through decoration-red-500/70 decoration-[3px]">~150.000 TL</span>
+              </div>
+              <div className="text-[11px] text-slate-500 mt-2 italic">+ Stres, karar yorgunluğu ve uyku kaybı <span className="text-red-300/90">BEDAVA</span> dahildir.</div>
+            </div>
+          </div>
+
+          {/* VS rozeti */}
+          <div className="hidden md:flex items-center justify-center">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-slate-900 font-black text-base flex items-center justify-center shadow-[0_0_30px_rgba(251,191,36,.5)] ring-4 ring-yellow-400/20">
+              VS
+            </div>
+          </div>
+
+          {/* PUSULA YKS PRO — SAĞ */}
+          <div className="relative rounded-2xl border-2 border-emerald-400/40 bg-gradient-to-br from-indigo-950/50 via-slate-950/60 to-purple-950/40 p-6 sm:p-8 ring-2 ring-emerald-400/20 shadow-[0_0_60px_rgba(79,70,229,.25)] reveal right">
+            <div className="absolute -top-3 right-5 bg-gradient-to-r from-emerald-500 to-indigo-500 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full shadow-[0_4px_18px_rgba(16,185,129,.4)]">
+              ✨ AKILLI SEÇİM
+            </div>
+
+            <div className="inline-flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-400/40 rounded-md px-2.5 py-1 mb-4">
+              <span className="text-base leading-none">✅</span>
+              <span className="text-[11px] font-extrabold text-emerald-300 tracking-wider">PUSULA YKS PRO</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-50 leading-tight mb-1">Sınava Kadar 7/24 Kişisel Yapay Zeka</h3>
+            <p className="text-xs text-indigo-300/80 mb-6">Veri odaklı rota — bir kez öde, sınava kadar koşa koşa.</p>
+
+            <ul className="space-y-2.5 mb-7">
+              {proItems.map((it,i) => (
+                <li key={i} className="flex items-start gap-2.5 text-[13px] sm:text-sm text-slate-200">
+                  <span className="text-base leading-tight">{it.i}</span>
+                  <span className="leading-snug">{it.t}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="border-t border-emerald-400/20 pt-5">
+              <div className="text-[11px] text-emerald-300 font-bold tracking-wider mb-1">TEK SEFERLİK FİYAT</div>
+              <div className="flex items-end gap-2 flex-wrap">
+                <span className="text-sm font-bold text-slate-500 line-through decoration-slate-500/70 decoration-2">10.499 TL</span>
+                <span className="text-5xl sm:text-6xl font-black tracking-tighter bg-gradient-to-r from-emerald-300 via-indigo-300 to-purple-300 bg-clip-text text-transparent leading-none">4.199 TL</span>
+                <span className="bg-emerald-500/20 border border-emerald-400/40 rounded-md px-2 py-0.5 text-[11px] font-black text-emerald-300 tracking-wider animate-pulse">%60 İNDİRİM</span>
+              </div>
+              <div className="text-[11px] text-slate-400 mt-2">Sınava kadar erişim. Aylık taksit yok, sürpriz ücret yok.</div>
+            </div>
+
+            <a href="https://app.pusulayks.com/register" target="_blank" rel="noopener noreferrer" className="block mt-6">
+              <button className="gradient-btn w-full py-3.5 rounded-xl text-white font-extrabold text-[15px] tracking-tight ring-4 ring-indigo-500/30 hover:ring-indigo-400/60 transition-all"
+                      style={{animation:'pulse-glow 2s ease infinite', fontFamily:'Inter,sans-serif', border:'none', cursor:'pointer', position:'relative', zIndex:1}}>
+                🚀 %60 Erken Kayıt Fırsatını Yakala
+              </button>
+            </a>
+            <div className="text-center text-[11px] text-slate-500 mt-3">11 kişi sayfada · {`Kontenjan tükenmek üzere`}</div>
+          </div>
+        </div>
+
+        {/* Tasarruf vurgu çubuğu */}
+        <div className="mt-8 sm:mt-10 max-w-[820px] mx-auto bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-emerald-500/10 border border-emerald-400/30 rounded-xl px-5 py-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-center reveal">
+          <span className="text-2xl">💰</span>
+          <span className="text-sm sm:text-base text-slate-200">Net tasarruf: <span className="font-black text-emerald-300 text-lg">~145.800 TL</span> <span className="text-slate-500">— üstüne, hiç stres yok.</span></span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ─── NAVBAR ─── */
 function Navbar({ tweaks }) {
   const [scrolled, setScrolled] = useState(false);
@@ -397,9 +579,9 @@ function Navbar({ tweaks }) {
   }, []);
   return (
     <nav style={{
-      position:'fixed', top:0, left:0, right:0, zIndex:100,
-      background: scrolled ? 'rgba(11,17,32,.95)' : 'transparent',
-      backdropFilter: scrolled ? 'blur(20px)' : 'none',
+      position:'fixed', top:36, left:0, right:0, zIndex:100,
+      background: scrolled ? 'rgba(11,17,32,.95)' : 'rgba(11,17,32,.4)',
+      backdropFilter:'blur(20px)',
       borderBottom: scrolled ? '1px solid rgba(255,255,255,.08)' : 'none',
       transition:'all .3s ease',
       padding:'0 24px',
@@ -418,11 +600,12 @@ function Navbar({ tweaks }) {
         <a href="https://app.pusulayks.com/register" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}>
           <button className="gradient-btn" style={{
             position:'relative', zIndex:1,
-            color:'white', border:'none', borderRadius:10, padding:'10px 22px',
-            fontFamily:'Inter,sans-serif', fontSize:14, fontWeight:600, cursor:'pointer',
-            letterSpacing:'-0.01em'
+            color:'white', border:'none', borderRadius:10, padding:'8px 16px',
+            fontFamily:'Inter,sans-serif', fontSize:13, fontWeight:700, cursor:'pointer',
+            letterSpacing:'-0.01em',
+            boxShadow:'0 0 0 2px rgba(99,102,241,.35), 0 8px 24px rgba(79,70,229,.35)'
           }}>
-            {tweaks.ctaText}
+            🔥 %60 Erken Kayıt
           </button>
         </a>
       </div>
@@ -440,14 +623,14 @@ function Hero({ tweaks }) {
       setTyped(full.slice(0, i));
       i++;
       if (i > full.length) clearInterval(t);
-    }, 28);
+    }, 18);
     return () => clearInterval(t);
   }, [full]);
 
   return (
     <section className="hero-section" style={{
       minHeight:'100vh', display:'flex', alignItems:'center',
-      padding:'80px 24px 40px',
+      padding:'130px 24px 40px',
       background:'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(79,70,229,.15) 0%, transparent 70%)',
       position:'relative', overflow:'hidden'
     }}>
@@ -471,7 +654,7 @@ function Hero({ tweaks }) {
             borderRadius:100, padding:'6px 14px', marginBottom:24
           }}>
             <span style={{width:6,height:6,borderRadius:'50%',background:'#22C55E',animation:'blink 1.5s infinite',display:'inline-block'}}/>
-            <span style={{fontSize:12,color:'#818CF8',fontWeight:600,letterSpacing:'0.05em'}}>2026 YKS MÜFREDATıNA TAM UYUMLU</span>
+            <span style={{fontSize:12,color:'#818CF8',fontWeight:700,letterSpacing:'0.05em'}}>2027 YKS · KURUCU ÜYE ERKEN KAYIT AÇIK</span>
           </div>
 
           <h1 style={{fontSize:'clamp(32px,4vw,54px)', fontWeight:900, lineHeight:1.1, letterSpacing:'-0.03em', marginBottom:24, position:'relative'}}>
@@ -483,19 +666,21 @@ function Hero({ tweaks }) {
             </span>
           </h1>
 
-          <p style={{fontSize:17, color:'#94A3B8', lineHeight:1.75, marginBottom:36, maxWidth:500}}>
-            Yapay zeka destekli dijital koçun <strong style={{color:'#E2E8F0'}}>Pusula YKS</strong> ile günlük planını optimize et, denemelerini analiz et ve net projektörü ile sıfırdan hedefe giden yolu gör.
+          <p style={{fontSize:17, color:'#94A3B8', lineHeight:1.75, marginBottom:36, maxWidth:520}}>
+            Masada <em style={{color:'#E2E8F0',fontStyle:'normal'}}>"Bugün ne çalışsam?"</em> derdine son. Tüm yılını senin yerine planlayan dijital koçunla tanış. <strong style={{color:'#E2E8F0'}}>Aylık taksit yok, sürpriz ücret yok.</strong>
           </p>
 
-          <div className="hero-cta-container" style={{display:'flex', gap:14, alignItems:'center', flexWrap:'wrap'}}>
+          <div className="hero-cta-container" style={{display:'flex', gap:18, alignItems:'center', flexWrap:'wrap'}}>
             <a href="https://app.pusulayks.com/register" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}>
-            <button className="gradient-btn" style={{
+            <button className="gradient-btn ring-4 ring-indigo-500/40 hover:ring-indigo-400/70 ring-offset-2 ring-offset-[#0B1120] transition-all" style={{
               position:'relative', zIndex:1,
-              color:'white', border:'none', borderRadius:12, padding:'15px 32px',
-              fontFamily:'Inter,sans-serif', fontSize:16, fontWeight:700, cursor:'pointer',
-              letterSpacing:'-0.01em', animation:'pulse-glow 2s ease infinite'
+              color:'white', border:'none', borderRadius:14, padding:'14px 28px',
+              fontFamily:'Inter,sans-serif', fontSize:16, fontWeight:800, cursor:'pointer',
+              letterSpacing:'-0.01em', animation:'pulse-glow 1.8s ease infinite',
+              display:'flex', flexDirection:'column', alignItems:'center', lineHeight:1.2
             }}>
-              🚀 {tweaks.ctaText}
+              <span>🚀 {tweaks.ctaText}</span>
+              <span style={{fontSize:11, fontWeight:600, opacity:.85, marginTop:3, letterSpacing:'0.02em'}}>✨ 4.199 TL · Tek Seferlik · Sınava Kadar</span>
             </button>
             </a>
             <div style={{display:'flex', alignItems:'center', gap:12}}>
@@ -505,14 +690,14 @@ function Hero({ tweaks }) {
                 ))}
               </div>
               <div>
-                <div style={{fontSize:13,fontWeight:700,color:'#E2E8F0'}}>2,400+ öğrenci</div>
-                <div style={{fontSize:11,color:'#64748B'}}>erken erişim listesinde</div>
+                <div style={{fontSize:13,fontWeight:700,color:'#E2E8F0'}}>2.400+ veli</div>
+                <div style={{fontSize:11,color:'#64748B'}}>çoktan kayıt yaptırdı</div>
               </div>
             </div>
           </div>
 
           <div className="hero-stats-container" style={{display:'flex', gap:24, marginTop:36}}>
-            {[{v:'%97',l:'Memnuniyet'},{v:'4.2x',l:'Verimlilik Artışı'}].map((s,i) => (
+            {[{v:'~145.800₺',l:'Net Tasarruf'},{v:'%97',l:'Memnuniyet'},{v:'4.2x',l:'Verimlilik'}].map((s,i) => (
               <div key={i}>
                 <div style={{fontSize:26,fontWeight:900,color:'#818CF8',letterSpacing:'-0.03em'}}>{s.v}</div>
                 <div style={{fontSize:11,color:'#64748B',marginTop:2}}>{s.l}</div>
@@ -777,8 +962,8 @@ function Pricing() {
             Hedefine Ulaşmak İçin<br/>
             <span className="gradient-text">Tek Bir Adım</span>
           </h2>
-          <p style={{fontSize:15, color:'#64748B', maxWidth:520, margin:'0 auto', lineHeight:1.75}}>
-            Abonelik yok, sürpriz kesinti yok. YKS'ye kadar tek seferlik ödeme ile tüm yapay zeka gücünü serbest bırak.
+          <p style={{fontSize:15, color:'#64748B', maxWidth:560, margin:'0 auto', lineHeight:1.75}}>
+            Abonelik yok. <strong style={{color:'#E2E8F0'}}>Aylık taksit yok. Sürpriz ücret yok.</strong> YKS'ye kadar tek seferlik <strong style={{color:'#818CF8'}}>4.199 TL</strong> ile tüm yapay zeka gücünü serbest bırak.
           </p>
         </div>
 
@@ -864,11 +1049,15 @@ function Pricing() {
             <div style={{fontSize:12, color:'#818CF8', fontWeight:700, letterSpacing:'0.1em', marginBottom:10}}>PRO PAKET</div>
             <div style={{fontSize:22, fontWeight:800, letterSpacing:'-0.02em', marginBottom:20, color:'#E2E8F0'}}>Pusula YKS PRO</div>
 
+            <div style={{display:'flex', alignItems:'center', gap:10, marginBottom:4}}>
+              <span style={{fontSize:18, fontWeight:700, color:'#64748B', textDecoration:'line-through', textDecorationColor:'rgba(148,163,184,.6)', textDecorationThickness:2}}>10.499 TL</span>
+              <span className="animate-pulse" style={{background:'rgba(16,185,129,.18)', border:'1px solid rgba(16,185,129,.45)', borderRadius:6, padding:'3px 8px', fontSize:10, fontWeight:900, color:'#34D399', letterSpacing:'0.08em'}}>%60 İNDİRİM</span>
+            </div>
             <div style={{marginBottom:4, display:'flex', alignItems:'flex-end', gap:6}}>
-              <span style={{fontSize:56, fontWeight:900, letterSpacing:'-0.04em', lineHeight:1, background:'linear-gradient(135deg,#818CF8,#A78BFA)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text'}}>499</span>
+              <span style={{fontSize:60, fontWeight:900, letterSpacing:'-0.04em', lineHeight:1, background:'linear-gradient(135deg,#818CF8,#A78BFA)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text'}}>4.199</span>
               <span style={{fontSize:22, fontWeight:700, color:'#818CF8', marginBottom:8}}>TL</span>
             </div>
-            <div style={{fontSize:12, color:'#64748B', marginBottom:28}}>Tek Seferlik Ödeme / Sınava Kadar Erişim</div>
+            <div style={{fontSize:12, color:'#64748B', marginBottom:28}}>Tek Seferlik Ödeme · Sınava Kadar Erişim · Aylık Taksit Yok</div>
 
             <div style={{borderTop:'1px solid rgba(99,102,241,.2)', paddingTop:24, marginBottom:28}}>
               {proFeatures.map((f,i) => (
@@ -884,14 +1073,15 @@ function Pricing() {
             </div>
 
             <a href="https://app.pusulayks.com/register" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none',display:'block'}}>
-            <button className="gradient-btn" style={{
+            <button className="gradient-btn ring-4 ring-indigo-500/30 hover:ring-indigo-400/60 transition-all" style={{
               width:'100%', padding:'15px', borderRadius:12,
               border:'none', color:'white', fontFamily:'Inter,sans-serif',
-              fontSize:15, fontWeight:700, cursor:'pointer',
+              fontSize:15, fontWeight:800, cursor:'pointer',
               letterSpacing:'-0.01em', position:'relative', zIndex:1,
-              boxShadow:'0 8px 30px rgba(79,70,229,.45)'
+              boxShadow:'0 8px 30px rgba(79,70,229,.45)',
+              animation:'pulse-glow 2s ease infinite'
             }}>
-              🚀 Sınava Kadar PRO Ol
+              🚀 %60 Erken Kayıt Fırsatını Yakala
             </button>
             </a>
 
@@ -920,13 +1110,13 @@ function FinalCTA({ tweaks }) {
         pointerEvents:'none'
       }}/>
       <div className="reveal" style={{maxWidth:680, margin:'0 auto', textAlign:'center', position:'relative', zIndex:1}}>
-        <div style={{fontSize:48, marginBottom:16}}>🧭</div>
+        <div style={{fontSize:48, marginBottom:16}}>⏳</div>
         <h2 style={{fontSize:'clamp(28px,4vw,48px)', fontWeight:900, letterSpacing:'-0.03em', lineHeight:1.15, marginBottom:20}}>
-          Zamanı Yöneten,<br/>
-          <span className="gradient-text">Sınavı Kazanır.</span>
+          Bu 12 Saat Bitince Fiyat<br/>
+          <span className="gradient-text">10.499 TL'ye Çıkıyor.</span>
         </h2>
-        <p style={{fontSize:16, color:'#64748B', lineHeight:1.75, marginBottom:40}}>
-          Kendi yol haritanı çizmeye başla. Pusula YKS ile 2026 sınavına veri odaklı hazırlan.
+        <p style={{fontSize:16, color:'#94A3B8', lineHeight:1.75, marginBottom:40}}>
+          Şu an sayfada <strong style={{color:'#FCA5A5'}}>11 kişiyle birlikte</strong> bu kontenjana bakıyorsun. Karar verme hızın, 6 ay sonraki netini belirleyecek.
         </p>
 
         {submitted ? (
@@ -955,21 +1145,22 @@ function FinalCTA({ tweaks }) {
             />
             <button
               onClick={() => { if(email) { window.open('https://app.pusulayks.com/register','_blank'); setSubmitted(true); } }}
-              className="gradient-btn"
+              className="gradient-btn ring-2 ring-indigo-500/40 hover:ring-indigo-400/70 transition-all"
               style={{
                 position:'relative', zIndex:1, flexShrink:0,
                 color:'white', border:'none', borderRadius:12, padding:'14px 24px',
-                fontFamily:'Inter,sans-serif', fontSize:15, fontWeight:700, cursor:'pointer',
-                whiteSpace:'nowrap'
+                fontFamily:'Inter,sans-serif', fontSize:15, fontWeight:800, cursor:'pointer',
+                whiteSpace:'nowrap',
+                animation:'pulse-glow 2s ease infinite'
               }}
             >
-              Hemen Başla
+              %60 Erken Kayıt Fırsatını Yakala
             </button>
           </div>
         )}
 
         <div style={{fontSize:12, color:'#475569', marginTop:16}}>
-          Kredi kartı gerekmez · Ücretsiz erken erişim
+          🔒 Güvenli ödeme · Tek seferlik 4.199 TL · Sınava kadar erişim
         </div>
 
         {/* Mobile App Coming Soon */}
@@ -1079,7 +1270,15 @@ function TweaksPanel({ tweaks, setTweaks, visible }) {
       <label style={{fontSize:12,color:'#64748B',display:'block',marginBottom:6}}>Buton Metni</label>
       <input value={tweaks.ctaText} onChange={e => setTweaks({...tweaks,ctaText:e.target.value})}
         style={{width:'100%',background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:8,padding:'7px 10px',color:'white',fontFamily:'Inter,sans-serif',fontSize:12,outline:'none',marginBottom:14}}/>
-      
+
+      <label style={{fontSize:12,color:'#64748B',display:'block',marginBottom:6}}>FOMO Banner Metni</label>
+      <input value={tweaks.fomoText || ''} onChange={e => setTweaks({...tweaks,fomoText:e.target.value})}
+        style={{width:'100%',background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:8,padding:'7px 10px',color:'white',fontFamily:'Inter,sans-serif',fontSize:12,outline:'none',marginBottom:14}}/>
+
+      <label style={{fontSize:12,color:'#64748B',display:'block',marginBottom:6}}>Kalan Kontenjan</label>
+      <input type="number" min="1" value={tweaks.kontenjan ?? 11} onChange={e => setTweaks({...tweaks,kontenjan: parseInt(e.target.value||'0',10)})}
+        style={{width:'100%',background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:8,padding:'7px 10px',color:'white',fontFamily:'Inter,sans-serif',fontSize:12,outline:'none',marginBottom:14}}/>
+
       <label style={{fontSize:12,color:'#64748B',display:'block',marginBottom:6}}>Ana Renk</label>
       <div style={{display:'flex',gap:8,marginBottom:14}}>
         {['#4F46E5','#7C3AED','#0EA5E9','#10B981','#F59E0B'].map(c => (
@@ -1135,8 +1334,10 @@ function App() {
 
   return (
     <>
+      <FomoBanner tweaks={tweaks} />
       <Navbar tweaks={tweaks} />
       <Hero tweaks={tweaks} />
+      <PriceComparison />
       <Features />
       <HowItWorks />
       <SocialProof tweaks={tweaks} />
