@@ -1,4 +1,4 @@
-# [Pusula YKS / Pusula KPSS] - Landing Page
+# Pusula YKS - Landing Page
 
 Welcome! This repository contains the source code for the promotional landing page of **[Pusula YKS / Pusula KPSS]**.
 
