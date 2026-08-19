@@ -1233,6 +1233,145 @@ function FinalCTA({ tweaks }) {
 }
 
 /* ─── FOOTER ─── */
+function AccountDeletionPage() {
+  const [email, setEmail] = useState('');
+  const [confirmed, setConfirmed] = useState(false);
+  const [requested, setRequested] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const previousTitle = document.title;
+    document.title = 'Hesap ve Veri Silme — Pusula YKS';
+    return () => { document.title = previousTitle; };
+  }, []);
+
+  const submitRequest = (event) => {
+    event.preventDefault();
+    const normalizedEmail = email.trim();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setError('Lütfen Pusula hesabında kullandığın geçerli e-posta adresini yaz.');
+      return;
+    }
+    if (!confirmed) {
+      setError('Hesabın ve ilişkili verilerin silinmesini istediğini onaylamalısın.');
+      return;
+    }
+
+    setError('');
+    const subject = encodeURIComponent('Pusula YKS hesap ve veri silme talebi');
+    const body = encodeURIComponent([
+      'Merhaba,',
+      '',
+      'Pusula YKS hesabımın ve hesabımla ilişkili kişisel verilerin silinmesini talep ediyorum.',
+      `Pusula hesabı e-posta adresim: ${normalizedEmail}`,
+      '',
+      'Bu talebin hesabımın doğrulanmasından sonra işleme alınmasını rica ederim.',
+      '',
+      'Teşekkürler.'
+    ].join('\n'));
+
+    window.location.href = `mailto:destek@pusulayks.com?subject=${subject}&body=${body}`;
+    setRequested(true);
+  };
+
+  return (
+    <div style={{minHeight:'100vh', background:'#0B1120', color:'#E2E8F0', fontFamily:'Inter, sans-serif'}}>
+      <header style={{borderBottom:'1px solid rgba(255,255,255,.08)', background:'rgba(11,17,32,.86)', backdropFilter:'blur(18px)'}}>
+        <div style={{maxWidth:1120, margin:'0 auto', padding:'22px 24px', display:'flex', justifyContent:'space-between', alignItems:'center', gap:20}}>
+          <a href="/" style={{display:'flex', alignItems:'center', gap:10, color:'#E2E8F0', textDecoration:'none'}}>
+            <img src="./favicon.png" alt="Pusula YKS" style={{width:38, height:38, objectFit:'contain'}} />
+            <span style={{fontSize:18, fontWeight:800, letterSpacing:'-0.03em'}}>Pusula <span style={{color:'#818CF8'}}>YKS</span></span>
+          </a>
+          <a href="https://app.pusulayks.com/legal/gizlilik" target="_blank" rel="noopener noreferrer" style={{color:'#94A3B8', fontSize:13, textDecoration:'none'}}>
+            Gizlilik politikası
+          </a>
+        </div>
+      </header>
+
+      <main style={{maxWidth:920, margin:'0 auto', padding:'72px 24px 96px'}}>
+        <div style={{maxWidth:700, margin:'0 auto'}}>
+          <div style={{display:'inline-flex', alignItems:'center', gap:8, padding:'7px 12px', borderRadius:999, border:'1px solid rgba(129,140,248,.35)', background:'rgba(79,70,229,.12)', color:'#A5B4FC', fontSize:11, fontWeight:800, letterSpacing:'.1em'}}>
+            HESAP VE VERİ SİLME
+          </div>
+
+          <h1 style={{margin:'22px 0 16px', fontSize:'clamp(34px,6vw,58px)', lineHeight:1.06, letterSpacing:'-0.05em', fontWeight:900}}>
+            Pusula YKS hesabını silmek mi istiyorsun?
+          </h1>
+          <p style={{fontSize:17, lineHeight:1.75, color:'#94A3B8', maxWidth:680}}>
+            Hesabının ve hesabınla ilişkili kişisel verilerin silinmesi için aşağıdaki formdan talep oluşturabilirsin. Talebin, hesabın doğrulandıktan sonra işleme alınır.
+          </p>
+
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:14, margin:'34px 0'}}>
+            {[
+              ['01', 'E-posta adresini yaz', 'Pusula hesabında kullandığın adresi gir.'],
+              ['02', 'Talebi gönder', 'E-posta uygulaman açılacak; talebi gönder.'],
+              ['03', 'Doğrulama ve silme', 'Hesabın doğrulandıktan sonra verilerin silinir.']
+            ].map(([number, title, description]) => (
+              <div key={number} style={{padding:18, borderRadius:16, background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.08)'}}>
+                <div style={{color:'#818CF8', fontSize:12, fontWeight:900, letterSpacing:'.1em', marginBottom:10}}>{number}</div>
+                <div style={{fontSize:15, fontWeight:800, marginBottom:6}}>{title}</div>
+                <div style={{fontSize:13, lineHeight:1.6, color:'#64748B'}}>{description}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{padding:24, borderRadius:22, background:'linear-gradient(145deg,rgba(79,70,229,.13),rgba(124,58,237,.08))', border:'1px solid rgba(129,140,248,.28)', boxShadow:'0 24px 70px rgba(0,0,0,.2)'}}>
+            {requested ? (
+              <div style={{padding:'16px 4px'}}>
+                <div style={{fontSize:32, marginBottom:12}}>✉️</div>
+                <h2 style={{fontSize:24, marginBottom:10}}>E-posta taslağın hazırlandı.</h2>
+                <p style={{color:'#94A3B8', lineHeight:1.7, marginBottom:16}}>
+                  E-posta uygulaman açılmadıysa talebini doğrudan şu adrese gönder:
+                </p>
+                <a href="mailto:destek@pusulayks.com" style={{color:'#A5B4FC', fontWeight:800}}>destek@pusulayks.com</a>
+              </div>
+            ) : (
+              <form onSubmit={submitRequest}>
+                <label htmlFor="deletion-email" style={{display:'block', fontSize:13, fontWeight:700, color:'#CBD5E1', marginBottom:8}}>
+                  Pusula hesabındaki e-posta adresin
+                </label>
+                <input
+                  id="deletion-email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={event => { setEmail(event.target.value); setError(''); }}
+                  placeholder="ornek@email.com"
+                  style={{width:'100%', padding:'15px 16px', borderRadius:12, border:'1px solid rgba(255,255,255,.14)', background:'rgba(15,23,42,.72)', color:'#F8FAFC', fontFamily:'Inter,sans-serif', fontSize:15, outline:'none'}}
+                />
+
+                <label style={{display:'flex', alignItems:'flex-start', gap:10, marginTop:18, color:'#94A3B8', fontSize:13, lineHeight:1.55, cursor:'pointer'}}>
+                  <input type="checkbox" checked={confirmed} onChange={event => { setConfirmed(event.target.checked); setError(''); }} style={{marginTop:3, accentColor:'#6366F1'}} />
+                  <span>Hesabımın, profil bilgilerimin ve hesabımla ilişkili verilerin kalıcı olarak silinmesini talep ettiğimi onaylıyorum.</span>
+                </label>
+
+                {error && <div role="alert" style={{marginTop:16, padding:'11px 13px', borderRadius:10, background:'rgba(244,63,94,.12)', border:'1px solid rgba(244,63,94,.3)', color:'#FDA4AF', fontSize:13}}>{error}</div>}
+
+                <button type="submit" className="gradient-btn" style={{width:'100%', marginTop:22, padding:'15px 18px', border:0, borderRadius:12, color:'white', fontFamily:'Inter,sans-serif', fontSize:15, fontWeight:800, cursor:'pointer', position:'relative', zIndex:1}}>
+                  Hesap silme talebi oluştur
+                </button>
+              </form>
+            )}
+          </div>
+
+          <div style={{marginTop:26, padding:18, borderRadius:16, background:'rgba(245,158,11,.08)', border:'1px solid rgba(245,158,11,.2)', color:'#CBD5E1', fontSize:13, lineHeight:1.7}}>
+            <strong style={{color:'#FBBF24'}}>Bilgi:</strong> Hesap silme işlemi geri alınamaz. Yasal yükümlülükler nedeniyle tutulması gereken kayıtlar varsa, bunlar gizlilik politikasında belirtilen süreler boyunca saklanabilir.
+          </div>
+        </div>
+      </main>
+
+      <footer style={{borderTop:'1px solid rgba(255,255,255,.08)', padding:'28px 24px', color:'#475569', fontSize:12}}>
+        <div style={{maxWidth:920, margin:'0 auto', display:'flex', justifyContent:'space-between', gap:16, flexWrap:'wrap'}}>
+          <span>© 2026 Pusula YKS</span>
+          <span>Hesap silme talepleri: <a href="mailto:destek@pusulayks.com" style={{color:'#818CF8'}}>destek@pusulayks.com</a></span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
 function Footer() {
   return (
     <footer style={{borderTop:'1px solid rgba(255,255,255,.07)', padding:'40px 24px'}}>
@@ -1248,6 +1387,9 @@ function Footer() {
                onMouseEnter={e => e.target.style.color='#818CF8'}
                onMouseLeave={e => e.target.style.color='#475569'}>{l}</a>
           ))}
+          <a href="/hesap-silme" style={{fontSize:13, color:'#475569', textDecoration:'none', transition:'color .2s'}}
+             onMouseEnter={e => e.target.style.color='#818CF8'}
+             onMouseLeave={e => e.target.style.color='#475569'}>Hesap Silme</a>
         </div>
       </div>
     </footer>
@@ -1331,6 +1473,10 @@ function App() {
       root.style.setProperty('--accent', tweaks.accentColor);
     }
   }, [tweaks, tweaksVisible]);
+
+  if (/^\/hesap-silme\/?$/.test(window.location.pathname)) {
+    return <AccountDeletionPage />;
+  }
 
   return (
     <>
