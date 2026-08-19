@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/hesap-silme",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/hesap-silme/",
+      "destination": "/index.html"
+    }
+  ]
+}
