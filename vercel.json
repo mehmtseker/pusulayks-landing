@@ -1,12 +1,30 @@
 {
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/hesap-silme",
-      "destination": "/index.html"
+      "source": "/indir",
+      "has": [{ "type": "header", "key": "user-agent", "value": ".*Android.*" }],
+      "destination": "/#android",
+      "permanent": false
     },
     {
-      "source": "/hesap-silme/",
-      "destination": "/index.html"
+      "source": "/indir",
+      "destination": "https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr",
+      "permanent": false
+    },
+    {
+      "source": "/app-store",
+      "destination": "https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    { "source": "/hesap-silme", "destination": "/hesap-silme.html" },
+    { "source": "/hesap-silme/", "destination": "/hesap-silme.html" }
+  ],
+  "headers": [
+    {
+      "source": "/assets/img/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }]
     }
   ]
 }

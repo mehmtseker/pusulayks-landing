@@ -1,1501 +1,1007 @@
 <!DOCTYPE html>
-<html lang="tr">
+<!--
+  data-trial="on"  -> 7 günlük ücretsiz deneme ile ilgili tüm metinler görünür
+  data-trial="off" -> hepsi tek hamlede gizlenir (App Store Connect'te deneme teklifi
+                      doğrulanana kadar "off" yapman yeterli; başka değişiklik gerekmez)
+-->
+<html lang="tr" data-platform="desktop" data-trial="on">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pusula YKS — YKS Sınav Yılını Şansa Değil, Veriye Bırak</title>
-<link rel="icon" type="image/png" href="./favicon.png?v=2">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pusula YKS — Kişiye Özel YKS Çalışma Planı Uygulaması</title>
+<meta name="description" content="Pusula YKS, 320 YKS konusunu gününe, netlerine ve hedef sıralamana göre sıraya dizen çalışma planı uygulaması. iPhone ve iPad için App Store'da.">
+<link rel="canonical" href="https://www.pusulayks.com/">
+<meta name="theme-color" content="#F6F7FB">
+<meta name="apple-itunes-app" content="app-id=6805790495">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:site_name" content="Pusula YKS">
+<meta property="og:url" content="https://www.pusulayks.com/">
+<meta property="og:title" content="Pusula YKS — Ne çalışacağını düşünme, sıradaki seansa dokun">
+<meta property="og:description" content="320 YKS konusu senin gününe, netlerine ve hedef sıralamana göre tek sırada. iPhone ve iPad için App Store'da.">
+<meta property="og:image" content="https://www.pusulayks.com/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Pusula YKS uygulamasının Bugün ekranı ve “Sıradaki seansa dokun” başlığı">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<script>
+  /* Platformu ilk boyamadan önce belirle: Android'de App Store düğmesi hiç görünmesin. */
+  (function () {
+    var d = document.documentElement, ua = navigator.userAgent || "";
+    var android = /Android/i.test(ua);
+    var ios = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    d.setAttribute("data-platform", android ? "android" : ios ? "ios" : "desktop");
+    d.classList.add("js");
+    /* site.js yüklenemezse animasyonlu içerik gizli kalmasın */
+    setTimeout(function () { if (!window.__pusulaReady) { d.classList.remove("js"); window.__pusulaLate = true; } }, 4000);
+  })();
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { background: #0B1120; font-family: 'Inter', sans-serif; color: #E2E8F0; overflow-x: hidden; }
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400..700&display=swap">
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="preload" as="image" href="/assets/img/screens/iphone-bugun.webp" type="image/webp">
+<script src="/assets/js/site.js" defer></script>
 
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: #0B1120; }
-  ::-webkit-scrollbar-thumb { background: #2D3A52; border-radius: 3px; }
-
-  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-  @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(79,70,229,.3)} 50%{box-shadow:0 0 40px rgba(79,70,229,.6)} }
-  @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
-  @keyframes draw-line { from{stroke-dashoffset:300} to{stroke-dashoffset:0} }
-  @keyframes count-up { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes fade-in-up { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-  @keyframes slide-in-right { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
-  @keyframes neon-pulse { 0%,100%{text-shadow:0 0 20px rgba(79,70,229,.5)} 50%{text-shadow:0 0 40px rgba(79,70,229,.9),0 0 80px rgba(124,58,237,.4)} }
-  @keyframes progress-fill { from{width:0} to{width:var(--w)} }
-  @keyframes dash-anim { to{stroke-dashoffset:-20} }
-
-  .animate-float { animation: float 4s ease-in-out infinite; }
-  .animate-fade-up { animation: fade-in-up .7s ease forwards; }
-  .animate-slide-right { animation: slide-in-right .7s ease forwards; }
-
-  .glass {
-    background: rgba(255,255,255,.04);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,.08);
-  }
-  .glass-strong {
-    background: rgba(30,41,59,.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,.1);
-  }
-  .gradient-text {
-    background: linear-gradient(135deg, #818CF8, #4F46E5, #7C3AED);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .gradient-btn {
-    background: linear-gradient(135deg, #4F46E5, #7C3AED);
-    transition: all .3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-  .gradient-btn::after {
-    content:''; position:absolute; inset:0;
-    background: linear-gradient(135deg, #6366F1, #9333EA);
-    opacity:0; transition: opacity .3s;
-  }
-  .gradient-btn:hover::after { opacity:1; }
-  .gradient-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(79,70,229,.5); }
-
-  .feature-card {
-    transition: all .35s cubic-bezier(.25,.46,.45,.94);
-    cursor: default;
-  }
-  .feature-card:hover {
-    transform: translateY(-6px);
-    border-color: rgba(79,70,229,.4) !important;
-    box-shadow: 0 20px 60px rgba(79,70,229,.15), 0 0 0 1px rgba(79,70,229,.2);
-  }
-  .step-line { background: linear-gradient(180deg, #4F46E5 0%, transparent 100%); }
-
-  .testimonial-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(99,102,241,.3) !important;
-  }
-  .testimonial-card { transition: all .3s ease; }
-
-  .nav-link { transition: color .2s; }
-  .nav-link:hover { color: #818CF8; }
-
-  .progress-bar-fill {
-    animation: progress-fill 1.5s ease forwards;
-  }
-  .chart-line {
-    stroke-dasharray: 300;
-    animation: draw-line 2s ease forwards;
-  }
-
-  /* ── Scroll reveal ── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity .75s cubic-bezier(.22,1,.36,1), transform .75s cubic-bezier(.22,1,.36,1);
-  }
-  .reveal.left  { transform: translateX(-44px); }
-  .reveal.right { transform: translateX(44px); }
-  .reveal.scale { transform: scale(.92) translateY(24px); }
-  .reveal.visible { opacity: 1 !important; transform: none !important; }
-  .d1 { transition-delay: .08s !important; }
-  .d2 { transition-delay: .16s !important; }
-  .d3 { transition-delay: .24s !important; }
-  .d4 { transition-delay: .32s !important; }
-  .d5 { transition-delay: .40s !important; }
-  .d6 { transition-delay: .48s !important; }
-
-  /* ── Mobile Responsiveness ── */
-  @media (max-width: 900px) {
-    .hero-grid { grid-template-columns: 1fr !important; gap: 40px !important; text-align: center; }
-    .hero-grid > div:first-child p { margin: 0 auto 32px auto !important; }
-    .hero-cta-container { justify-content: center !important; }
-    .hero-stats-container { justify-content: center !important; }
-    
-    .features-grid { grid-template-columns: 1fr !important; }
-    
-    .how-it-works-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
-    .how-it-works-line { display: none !important; }
-    
-    .social-proof-grid { grid-template-columns: 1fr !important; }
-    
-    .pricing-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
-    
-    .nav-links { display: none !important; }
-    .nav-inner { padding: 0 16px !important; }
-    
-    .footer-container { flex-direction: column !important; text-align: center !important; gap: 20px !important; }
-    
-    section { padding: 60px 16px !important; }
-    .hero-section { padding: 130px 16px 40px !important; }
-
-    .app-mockup-wrapper { position: relative !important; width: 100% !important; display: block !important; height: 350px; }
-    .app-mockup-scale { transform: scale(0.8); transform-origin: center top; width: 100%; height: 100%; display: block !important; }
-    .app-mockup-float { width: 100%; height: 100%; display: block !important; }
-    .app-mockup-inner { position: absolute !important; left: 50% !important; top: 0 !important; margin-left: -290px !important; max-width: none !important; width: 580px !important; }
-  }
-
-  @media (max-width: 600px) {
-    .app-mockup-scale { transform: scale(0.65); }
-    .app-mockup-wrapper { height: 280px; }
-  }
-
-  @media (max-width: 480px) {
-    .app-mockup-scale { transform: scale(0.55); }
-    .app-mockup-wrapper { height: 240px; }
-    .hero-cta-container { flex-direction: column; }
-    .hero-stats-container { flex-wrap: wrap; }
-    .nav-brand-text { font-size: 16px !important; }
-    .final-cta-form { flex-direction: column; }
-  }
-</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  "name": "Pusula YKS",
+  "description": "YKS müfredatının 320 konusunu öğrencinin gerçek gününe, netlerine ve hedef sıralamasına göre sıraya dizen çalışma planı uygulaması.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "iOS, iPadOS",
+  "inLanguage": "tr",
+  "url": "https://www.pusulayks.com/",
+  "downloadUrl": "https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr",
+  "image": "https://www.pusulayks.com/assets/img/icon-192.png",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TRY" },
+  "author": { "@type": "Person", "name": "Mehmet Şeker" }
+}
+</script>
 </head>
 <body>
-<div id="root"></div>
 
-<script type="text/babel">
-const { useState, useEffect, useRef } = React;
+<!-- İkon kütüphanesi -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-apple" viewBox="0 0 20 24"><path fill="currentColor" d="M14.94 5.19A4.38 4.38 0 0 0 16 2a4.44 4.44 0 0 0-3 1.52 4.17 4.17 0 0 0-1 3.09 3.69 3.69 0 0 0 2.94-1.42zm2.52 7.44a4.51 4.51 0 0 1 2.16-3.81 4.66 4.66 0 0 0-3.66-2c-1.56-.16-3 .91-3.83.91-.83 0-2-.89-3.3-.87A4.92 4.92 0 0 0 4.69 9.4C2.93 12.45 4.24 17 6 19.47c.8 1.21 1.8 2.59 3.12 2.54 1.23-.05 1.72-.81 3.22-.81 1.5 0 1.9.81 3.22.79 1.32-.02 2.22-1.24 3.06-2.45a11 11 0 0 0 1.38-2.85 4.41 4.41 0 0 1-2.54-4.06z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-dash" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M7 12h10"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V7.8a3.5 3.5 0 0 1 7 0v2.7"/></g></symbol>
+  <symbol id="i-timer" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V10M9.5 3h5"/></g></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/></g></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.1"/></g></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></g></symbol>
+  <symbol id="i-compass" viewBox="0 0 640 640"><g fill="none" stroke="currentColor"><circle cx="320" cy="320" r="318" stroke-opacity=".35"/><circle cx="320" cy="320" r="252" stroke-opacity=".6"/><circle cx="320" cy="320" r="176" stroke-opacity=".4" stroke-dasharray="2 7"/><path d="M320 2v26M320 612v26M2 320h26M612 320h26" stroke-opacity=".6"/><path d="M412 228 344 344 228 412 296 296Z" stroke-opacity=".55" stroke-linejoin="round"/></g></symbol>
+</svg>
 
-/* ─── TWEAK DEFAULTS ─── */
-const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "accentColor": "#4F46E5",
-  "heroTitle": "150.000 TL'lik Dershane Masrafını Çöpe At. Yapay Zeka ile 2027 YKS'ye Eksiksiz Hazırlan.",
-  "ctaText": "%60 Erken Kayıt Fırsatını Yakala",
-  "fomoText": "⚠️ 2027 YKS Kurucu Üye Fiyatı İçin Son 12 Saat!",
-  "kontenjan": 11,
-  "showTestimonials": true,
-  "darkMode": true
-}/*EDITMODE-END*/;
+<a class="skip-link" href="#icerik">İçeriğe geç</a>
 
-/* ─── SVG ICONS ─── */
-const IconBrain = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
-    <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>
-  </svg>
-);
-const IconTarget = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
-    <line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/>
-    <line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/>
-  </svg>
-);
-const IconChart = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
-    <polyline points="16 7 22 7 22 13"/>
-  </svg>
-);
-const IconMap = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
-    <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
-  </svg>
-);
-const IconCompass = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="12" r="10"/>
-    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
-  </svg>
-);
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Pusula YKS ana sayfa">
+      <img src="/assets/img/icon-96.png" width="34" height="34" alt="">
+      <span class="brand__name">Pusula<span>YKS</span></span>
+    </a>
 
-/* ─── MINI DASHBOARD MOCKUP ─── */
-function MiniDashboard() {
-  const [activeTab, setActiveTab] = useState('yol');
-  const tabs = [{id:'yol',label:'Yol Haritası'},{id:'analiz',label:'Net Analizi'},{id:'plan',label:'AI Planlayıcı'}];
+    <nav class="nav" aria-label="Ana menü">
+      <a href="#ekranlar">Ekranlar</a>
+      <a href="#nasil">Nasıl çalışır</a>
+      <a href="#koc">Koç</a>
+      <a href="#fiyatlar">Fiyatlar</a>
+      <a href="#sss">SSS</a>
+    </nav>
 
-  return (
-    <div className="app-mockup-inner" style={{
-      background:'#0F172A', borderRadius:16, overflow:'hidden',
-      border:'1px solid rgba(255,255,255,.1)',
-      boxShadow:'0 40px 120px rgba(0,0,0,.8), 0 0 0 1px rgba(79,70,229,.2)',
-      width:'100%', maxWidth:580
-    }}>
-      {/* Titlebar */}
-      <div style={{background:'#1a2540', padding:'10px 16px', display:'flex', alignItems:'center', gap:12, borderBottom:'1px solid rgba(255,255,255,.07)'}}>
-        <div style={{display:'flex',gap:6}}>
-          <div style={{width:10,height:10,borderRadius:'50%',background:'#FF5F57'}}/>
-          <div style={{width:10,height:10,borderRadius:'50%',background:'#FFBD2E'}}/>
-          <div style={{width:10,height:10,borderRadius:'50%',background:'#28CA41'}}/>
+    <div class="header-actions">
+      <a class="store-btn store-btn--sm hide-android" href="https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr">
+        <svg aria-hidden="true"><use href="#i-apple"/></svg>
+        <span class="store-btn__text"><span class="store-btn__big">App Store'dan indir</span></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menü">
+        <svg aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+
+    <nav class="mobile-nav" id="mobile-nav" aria-label="Mobil menü">
+      <a href="#ekranlar">Ekranlar</a>
+      <a href="#nasil">Nasıl çalışır</a>
+      <a href="#plan-motoru">Plan motoru</a>
+      <a href="#koc">Koç</a>
+      <a href="#fiyatlar">Fiyatlar</a>
+      <a href="#sss">SSS</a>
+    </nav>
+  </div>
+</header>
+
+<main id="icerik">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-labelledby="hero-baslik">
+    <div class="wrap hero__grid">
+      <div class="hero__copy">
+        <a class="pill-live hide-android" href="https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr"><b>Yeni</b> App Store'da yayında</a>
+        <span class="pill-live only-android"><b>Yeni</b> App Store'da yayında · Android yakında</span>
+
+        <h1 id="hero-baslik">Ne çalışacağını düşünme. <em>Sıradaki seansa dokun.</em></h1>
+
+        <p class="hero__lead">Pusula, YKS müfredatının 320 konusunu senin gününe, netlerine ve hedef sıralamana göre sıraya dizer. Hangi konuyu ne zaman ve kaç dakika çalışacağını planın söyler.</p>
+
+        <div class="hero__cta hide-android">
+          <a class="store-btn" href="https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr">
+            <svg aria-hidden="true"><use href="#i-apple"/></svg>
+            <span class="store-btn__text">
+              <span class="store-btn__small">iPhone ve iPad için</span>
+              <span class="store-btn__big">App Store'dan İndir</span>
+            </span>
+          </a>
+          <div class="qr-card hide-mobile-os">
+            <img src="/assets/img/qr-indir.svg" width="58" height="58" alt="Pusula YKS'yi App Store'dan indirmek için QR kod">
+            <span><strong>Telefonuna indir</strong>Kamerayı QR koda tut</span>
+          </div>
         </div>
-        <div style={{display:'flex',gap:4,marginLeft:8}}>
-          {tabs.map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)} style={{
-              background: activeTab===t.id ? 'rgba(79,70,229,.25)' : 'transparent',
-              border: activeTab===t.id ? '1px solid rgba(79,70,229,.5)' : '1px solid transparent',
-              color: activeTab===t.id ? '#818CF8' : '#64748B',
-              padding:'3px 10px', borderRadius:6, fontSize:11, cursor:'pointer', transition:'all .2s', fontFamily:'Inter,sans-serif'
-            }}>{t.label}</button>
-          ))}
+
+        <ul class="hero__fine hide-android">
+          <li><span><svg aria-hidden="true"><use href="#i-check"/></svg>Ücretsiz indir, ilk planın ücretsiz</span></li>
+          <li class="trial"><span><svg aria-hidden="true"><use href="#i-check"/></svg>Pro'yu 7 gün ücretsiz dene</span></li>
+          <li class="trial"><span><svg aria-hidden="true"><use href="#i-check"/></svg>Deneme bitiminden en az 24 saat önce iptal edersen ücret yok</span></li>
+        </ul>
+
+        <div class="hero__cta only-android">
+          <a class="btn btn--accent btn--lg" href="https://app.pusulayks.com/register">Web'de ücretsiz başla</a>
         </div>
-        <div style={{marginLeft:'auto', background:'linear-gradient(135deg,#4F46E5,#7C3AED)', padding:'4px 12px', borderRadius:6, fontSize:11, color:'white', fontFamily:'Inter,sans-serif', fontWeight:600}}>
-          ✦ Plan Oluştur
+        <div class="android-inline only-android">
+          <svg aria-hidden="true"><use href="#i-phone"/></svg>
+          <div>
+            <strong>Android uygulaması yakında Google Play'de.</strong>
+            Şimdilik Pusula'yı tarayıcıdan kullanabilirsin; uygulama gelince aynı hesapla kaldığın yerden devam edersin.
+          </div>
         </div>
+
+        <p class="android-inline hide-ios hide-android">
+          <svg aria-hidden="true"><use href="#i-phone"/></svg>
+          <span>Android telefonun mu var? Google Play sürümü yakında; o zamana kadar <a href="#android">web'den başlayabilirsin</a>.</span>
+        </p>
       </div>
 
-      {/* Content */}
-      <div style={{padding:16, height:320}}>
-        {activeTab === 'yol' && <YolHaritasiView />}
-        {activeTab === 'analiz' && <NetAnaliziView />}
-        {activeTab === 'plan' && <AIPlanlayiciView />}
+      <div class="hero__visual">
+        <svg class="compass-ring" aria-hidden="true"><use href="#i-compass"/></svg>
+
+        <figure class="device phone phone--back">
+          <img src="/assets/img/screens/iphone-plan.webp" width="720" height="1490" alt="Plan ekranı, Yol Haritam sekmesi: sınava kalan gün, ay ay konu kartları ve çalışılacak konular." decoding="async">
+        </figure>
+        <figure class="device phone phone--front">
+          <img src="/assets/img/screens/iphone-bugun.webp" width="720" height="1490" alt="Bugün ekranı: sıradaki seans kartı, Seansa Başla düğmesi ve saatli Günün Akışı listesi." fetchpriority="high" decoding="async">
+        </figure>
+
+        <div class="float-card float-card--notif" aria-hidden="true">
+          <img src="/assets/img/icon-96.png" width="36" height="36" alt="">
+          <div>
+            <div class="float-card__meta"><b>Pusula</b><span>şimdi</span></div>
+            <p>Yeni gün. Bugünkü planın hazır; sıradaki seansla başla.</p>
+          </div>
+        </div>
+
+        <div class="float-card float-card--focus" aria-hidden="true">
+          <span class="dot"><svg><use href="#i-timer"/></svg></span>
+          <div><b>Odak seansın sürüyor</b>Rasyonel Sayılar · 45 dk</div>
+        </div>
       </div>
     </div>
-  );
-}
+  </section>
 
-function YolHaritasiView() {
-  const weeks = [
-    {range:'20 Nis – 26 Nis', net:'+8.1', active:true},
-    {range:'27 Nis – 3 May', net:'+7.8', active:false},
-    {range:'4 May – 10 May', net:'+12.4', active:false},
-    {range:'11 May – 17 May', net:'+8.8', active:false},
-  ];
-  return (
-    <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, height:'100%'}}>
-      <div>
-        <div style={{fontSize:10, color:'#4F46E5', fontWeight:700, marginBottom:8, letterSpacing:'0.1em'}}>HAFTALIK AKIŞ</div>
-        {weeks.map((w,i) => (
-          <div key={i} style={{
-            background: w.active ? 'rgba(79,70,229,.15)' : 'rgba(255,255,255,.03)',
-            border: `1px solid ${w.active ? 'rgba(79,70,229,.4)' : 'rgba(255,255,255,.06)'}`,
-            borderRadius:8, padding:'8px 10px', marginBottom:6,
-            display:'flex', alignItems:'center', justifyContent:'space-between'
-          }}>
+  <!-- ============ RAKAMLAR ============ -->
+  <section class="facts" aria-label="Rakamlarla Pusula YKS">
+    <div class="wrap">
+      <ul>
+        <li><b>320</b><span>konu</span></li>
+        <li><b>14</b><span>ders</span></li>
+        <li><b>181</b><span>konu ön koşul zincirinde</span></li>
+        <li><b>~1.541</b><span>saat planlanmış içerik</span></li>
+        <li class="trial hide-android"><b>7 gün</b><span>ücretsiz deneme</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ FARKLAR ============ -->
+  <section class="section" id="neden" aria-labelledby="neden-baslik">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Neden Pusula</span>
+        <h2 id="neden-baslik">Yapılacaklar listesi değil. <em>Bir plan motoru.</em></h2>
+        <p class="lead">Çoğu uygulamada ne çalışacağına yine sen karar verirsin. Pusula ise sınıfını, alanını, netlerini, hedef sıralamanı ve gerçekten boş olan saatlerini hesaba katar; sonra konuları senin için tek bir sıraya dizer.</p>
+      </div>
+
+      <div class="diff-grid">
+        <article class="diff-card reveal">
+          <div class="diff-card__visual" aria-hidden="true">
+            <div class="chain">
+              <div class="node"><small>Ön koşul</small><b>Hücre</b></div>
+              <span class="chain__link"><svg><use href="#i-lock"/></svg></span>
+              <div class="node node--locked"><small>Bekliyor</small><b>Bitki Biyolojisi</b></div>
+            </div>
+            <div class="meter">
+              <div class="meter__row"><span>Hücre konusundaki hâkimiyetin</span><span>eşik</span></div>
+              <div class="meter__bar"><span class="meter__fill" style="width:46%"></span><span class="meter__mark" style="left:60%"></span></div>
+            </div>
+          </div>
+          <div class="diff-card__body">
+            <span class="diff-card__num">01</span>
+            <h3>Sıra atlatmaz</h3>
+            <p class="diff-card__quote">Konuları doğru sırayla çalışırsın; sistem atlamana izin vermez.</p>
+            <p>320 konunun 181'i bir ön koşul zincirine bağlı. Ön koşulu yeterince oturmamış konu plana hiç girmez: Hücre bitmeden Bitki Biyolojisi planlanmaz.</p>
+          </div>
+        </article>
+
+        <article class="diff-card reveal" data-delay="1">
+          <div class="diff-card__visual" aria-hidden="true">
+            <div class="signals">
+              <div class="signal"><span>Yanlış + boş oranı</span><i style="width:100%"></i></div>
+              <div class="signal"><span>Konunun zorluğu</span><i style="width:75%"></i></div>
+              <div class="signal"><span>Geçen süre</span><i style="width:50%"></i></div>
+            </div>
+            <div class="multipliers">
+              <span>× sınavdaki sıklık</span><span>× hedef sıralama</span><span>× branş net açığı</span>
+            </div>
+          </div>
+          <div class="diff-card__body">
+            <span class="diff-card__num">02</span>
+            <h3>Zayıflığına göre sıralar</h3>
+            <p class="diff-card__quote">En çok kaybettiğin konu, en öne gelir.</p>
+            <p>Öncelik hesabı üç sinyali tartar: yanlış ve boş oranın, konunun üzerinden geçen süre ve konunun zorluğu. Üstüne konunun sınavdaki sıklığı, hedef sıralamanın baskısı ve branştaki net açığın da eklenir.</p>
+          </div>
+        </article>
+
+        <article class="diff-card reveal" data-delay="2">
+          <div class="diff-card__visual" aria-hidden="true">
             <div>
-              {w.active && <div style={{width:8,height:8,borderRadius:'50%',background:'#4F46E5',display:'inline-block',marginRight:6}}/>}
-              <span style={{fontSize:11, color: w.active ? '#E2E8F0' : '#64748B', fontWeight: w.active ? 600 : 400}}>{w.range}</span>
+              <div class="dayline__labels" style="position:relative;height:14px">
+                <span style="position:absolute;left:0">08:00</span>
+                <span style="position:absolute;left:46.67%;transform:translateX(-50%)">15:00</span>
+                <span style="position:absolute;right:0">23:00</span>
+              </div>
+              <div class="dayline__bar">
+                <span class="seg-school" style="width:46.67%"></span>
+                <span class="seg-routine" style="width:2.22%"></span>
+                <span class="seg-break" style="width:1.11%"></span>
+                <span class="seg-topic" style="width:5%"></span>
+                <span class="seg-break" style="width:1.67%"></span>
+                <span class="seg-topic" style="width:5%"></span>
+                <span class="seg-break" style="width:1.67%"></span>
+                <span class="seg-q" style="width:5%"></span>
+                <span class="seg-break" style="width:3.33%"></span>
+                <span class="seg-topic" style="width:5%"></span>
+                <span class="seg-free" style="width:23.33%"></span>
+              </div>
             </div>
-            <span style={{fontSize:11, color:'#22C55E', fontWeight:700}}>{w.net} Net</span>
+            <div class="legend">
+              <span><i class="seg-school"></i>Okul</span>
+              <span><i class="seg-routine"></i>Rutin</span>
+              <span><i class="seg-topic"></i>Konu</span>
+              <span><i class="seg-q"></i>Soru</span>
+            </div>
+            <p class="note" style="font-size:12px;margin:0">Örnek: 11. sınıf, hafta içi. Plan okuldan sonra, 15:00'te başlar.</p>
           </div>
-        ))}
+          <div class="diff-card__body">
+            <span class="diff-card__num">03</span>
+            <h3>Gününe sığdırır</h3>
+            <p class="diff-card__quote">Yetişmeyecek bir plan vermez.</p>
+            <p>Kapasite senin gerçek gününden hesaplanır: sınıf durumun, okul ya da mesai saatlerin, çalışamadığın günler, rutinler ve seans uzunluğu hesaba katılır. Yarım kalan hafta, tam hafta gibi sayılmaz.<span class="sr-only"> Örneğin 11. sınıftaysan hafta içi planın okuldan sonra, 15:00'te başlar.</span></p>
+          </div>
+        </article>
       </div>
-      <div style={{display:'flex', flexDirection:'column', gap:8}}>
-        <div style={{background:'rgba(255,255,255,.04)', borderRadius:8, padding:10, border:'1px solid rgba(255,255,255,.06)', flex:1}}>
-          <div style={{fontSize:9, color:'#4F46E5', fontWeight:700, marginBottom:6, letterSpacing:'0.1em'}}>NET PROJEKTÖR</div>
-          <MiniChart />
+    </div>
+  </section>
+
+  <!-- ============ EKRANLAR ============ -->
+  <section class="section" id="ekranlar" aria-labelledby="ekranlar-baslik" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head section-head--center reveal">
+        <span class="eyebrow">Uygulamanın içi</span>
+        <h2 id="ekranlar-baslik">Beş ekran, <em>beş ayrı iş.</em></h2>
+        <p class="lead">Telefonda alt sekme çubuğu, tablette kalıcı yan menü. Görseller uygulamanın gerçek ekranlarından.</p>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Uygulama ekranları">
+        <button class="tab" type="button" role="tab" id="tab-bugun" aria-controls="panel-bugun" aria-selected="true">Bugün</button>
+        <button class="tab" type="button" role="tab" id="tab-plan" aria-controls="panel-plan" aria-selected="false" tabindex="-1">Plan</button>
+        <button class="tab" type="button" role="tab" id="tab-konular" aria-controls="panel-konular" aria-selected="false" tabindex="-1">Konular</button>
+        <button class="tab" type="button" role="tab" id="tab-deneme" aria-controls="panel-deneme" aria-selected="false" tabindex="-1">Deneme</button>
+        <button class="tab" type="button" role="tab" id="tab-koc" aria-controls="panel-koc" aria-selected="false" tabindex="-1">Koç</button>
+      </div>
+
+      <div class="screen-panel" id="panel-bugun" role="tabpanel" aria-labelledby="tab-bugun" tabindex="0">
+        <figure class="device tablet">
+          <img src="/assets/img/screens/ipad-bugun.webp" width="1600" height="1225" alt="iPad'de Bugün ekranı: sıradaki seans kartı, günlük hedef halkası, Pusula Koç notu ve Günün Akışı." loading="lazy" decoding="async">
+        </figure>
+        <div class="screen-panel__copy">
+          <span class="tag tag--muted">Günün akışı</span>
+          <h3>Bugün</h3>
+          <p>Zamanının çoğunu geçireceğin ekran. Açtığın an ne yapacağını bilirsin.</p>
+          <ul class="checklist">
+            <li>Sıradaki seans kartı: ders, konu, saat, süre ve büyük başlat düğmesi</li>
+            <li>Gün halkası: çalıştığın ve hedeflenen dakika, kalan görev sayısı</li>
+            <li>Koç notu: günün tek cümlelik odağı</li>
+            <li>Günün Akışı: saatli zaman çizelgesi, her blokta Konu ya da Soru rozeti</li>
+            <li>Seri rozeti: üst üste kaç gün çalıştığın</li>
+          </ul>
         </div>
-        <div style={{background:'rgba(255,255,255,.04)', borderRadius:8, padding:10, border:'1px solid rgba(255,255,255,.06)'}}>
-          <div style={{fontSize:9, color:'#94A3B8', marginBottom:4}}>TAHMİNİ BİTİŞ</div>
-          <div style={{display:'flex', gap:16}}>
-            <div><div style={{fontSize:20, fontWeight:800, color:'#818CF8'}}>53<span style={{fontSize:12}}>g</span></div><div style={{fontSize:9,color:'#64748B'}}>YKS'ye</div></div>
-            <div><div style={{fontSize:20, fontWeight:800, color:'#22C55E'}}>86</div><div style={{fontSize:9,color:'#64748B'}}>Konu Tamam</div></div>
-          </div>
+      </div>
+
+      <div class="screen-panel" id="panel-plan" role="tabpanel" aria-labelledby="tab-plan" tabindex="0">
+        <figure class="device tablet">
+          <img src="/assets/img/screens/ipad-plan.webp" width="1600" height="1225" alt="iPad'de Plan ekranı, Yol Haritam sekmesi: sınava kalan gün, aylık konu kartları ve haftanın çalışılacak konuları." loading="lazy" decoding="async">
+        </figure>
+        <div class="screen-panel__copy">
+          <span class="tag tag--muted">Bu Hafta · Yol Haritam</span>
+          <h3>Plan</h3>
+          <p>Bu Hafta sekmesi saatli programı, Yol Haritam sınava kadarki bütün rotayı gösterir.</p>
+          <ul class="checklist">
+            <li>Ay ve hafta kartları: konular, takvim aralığı, kalan gün</li>
+            <li>Konu satırlarında seans sayısı ve gerçekçi bir süre aralığı: “~3,5–5 saat”</li>
+            <li>“Neden bu konu” rozetleri: zayıf konu mu, tekrar zamanı mı</li>
+            <li>Yetişmeyecekse kapasite uyarısı ve üç çıkış yolu</li>
+          </ul>
+          <p class="screen-note">Ücretsiz sürümde yol haritasında yalnızca içinde bulunduğun dönem açık; sınava kadarki tüm dönemler Pro'da.</p>
+        </div>
+      </div>
+
+      <div class="screen-panel" id="panel-konular" role="tabpanel" aria-labelledby="tab-konular" tabindex="0">
+        <figure class="device tablet">
+          <img src="/assets/img/screens/ipad-konular.webp" width="1600" height="1225" alt="iPad'de Konular ekranı: genel ilerleme halkası, TYT ve AYT sekmeleri, ders kartları ve Türkçe konularının durumları." loading="lazy" decoding="async">
+        </figure>
+        <div class="screen-panel__copy">
+          <span class="tag tag--muted">Konu takibi</span>
+          <h3>Konular</h3>
+          <p>Alanındaki konuların tamamı, ders ders. En üstte genel ilerleme halkası.</p>
+          <ul class="checklist">
+            <li>TYT ve AYT sekmeleri: yalnız gerçekten girdiğin bölümler</li>
+            <li>Konu arama: konular arasında anlık filtre</li>
+            <li>Bildiğin konuyu “Biliyorum” yap; bir daha planlanmaz</li>
+            <li>Konu geçmişi: o konuya ne zaman, kaç saat çalıştığın</li>
+            <li>Toplu tamamla: bir dersin kalan konularını tek hamlede</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="screen-panel" id="panel-deneme" role="tabpanel" aria-labelledby="tab-deneme" tabindex="0">
+        <figure class="device tablet">
+          <img src="/assets/img/screens/ipad-deneme.webp" width="1600" height="1225" alt="iPad'de Deneme ekranı: TYT ve AYT ortalama kartları, toplam deneme sayısı ve net değerleriyle deneme listesi." loading="lazy" decoding="async">
+        </figure>
+        <div class="screen-panel__copy">
+          <span class="tag tag--muted">Deneme girişi</span>
+          <h3>Deneme</h3>
+          <p>Bilinçli olarak sade: yalnız giriş ve liste. Yorumu ve gidişatı Koç'taki haftalık raporda bulursun.</p>
+          <ul class="checklist">
+            <li>TYT ve AYT ortalama kartları</li>
+            <li>Yeni Deneme Ekle: ders ders doğru, yanlış, boş</li>
+            <li>TYT'de Türkçe, Matematik, Sosyal ve Fen netlerin planı doğrudan besler</li>
+            <li>Her kartta tür rozeti ve toplam net</li>
+            <li>Henüz deneme girmediysen sahte sıfırlar yerine “Henüz deneme yok” yazar</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="screen-panel" id="panel-koc" role="tabpanel" aria-labelledby="tab-koc" tabindex="0">
+        <figure class="device tablet">
+          <img src="/assets/img/screens/ipad-koc.webp" width="1600" height="1225" alt="iPad'de Pusula Koç ekranı: haftalık koç raporu kartı, unutma eğrisi, net tahmini ve dikkat sinyalleri." loading="lazy" decoding="async">
+        </figure>
+        <div class="screen-panel__copy">
+          <span class="tag tag--muted">Pusula Koç masası</span>
+          <h3>Koç</h3>
+          <p>Analiz ve öngörü katmanı. Koç sana anlatır; sen çalışmaya devam edersin.</p>
+          <ul class="checklist">
+            <li>Haftalık koç raporu: hafta kapanınca “HAZIR” rozetiyle açılır</li>
+            <li>Unutma eğrisi: hangi konunun ne zaman unutulacağı</li>
+            <li>Net Tahmini: TYT ve AYT için mevcut ve hedef, sınava kalan gün</li>
+            <li>Ders analizi ve riskli dersler için Dikkat Sinyalleri</li>
+            <li>Kader Simülasyonu: “bu tempoyla yetişir / yetişmez”</li>
+          </ul>
         </div>
       </div>
     </div>
-  );
-}
+  </section>
 
-function MiniChart() {
-  const tytPoints = "10,80 30,72 50,65 70,55 90,48 110,38 130,25 150,18";
-  const projPoints = "150,18 170,12 190,8 210,4";
-  return (
-    <svg viewBox="0 0 220 90" style={{width:'100%',height:80}}>
-      <defs>
-        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#22C55E" stopOpacity=".4"/>
-          <stop offset="100%" stopColor="#22C55E" stopOpacity="0"/>
-        </linearGradient>
-        <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#818CF8" stopOpacity=".3"/>
-          <stop offset="100%" stopColor="#818CF8" stopOpacity="0"/>
-        </linearGradient>
-      </defs>
-      <polygon points={`10,80 ${tytPoints} 150,90 10,90`} fill="url(#g1)" opacity=".6"/>
-      <polyline points={tytPoints} fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" className="chart-line"/>
-      <polyline points={projPoints} fill="none" stroke="#818CF8" strokeWidth="1.5" strokeDasharray="4 3" strokeLinecap="round"/>
-      <text x="4" y="10" fontSize="7" fill="#64748B">TYT</text>
-      <text x="155" y="10" fontSize="7" fill="#64748B">Proj</text>
-    </svg>
-  );
-}
-
-function NetAnaliziView() {
-  const branches = [
-    {name:'TYT Matematik', correct:18, wrong:4, color:'#4F46E5'},
-    {name:'TYT Türkçe', correct:28, wrong:2, color:'#22C55E'},
-    {name:'AYT Fizik', correct:8, wrong:7, color:'#F59E0B'},
-    {name:'AYT Kimya', correct:12, wrong:5, color:'#EC4899'},
-  ];
-  return (
-    <div>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
-        <div style={{fontSize:10,color:'#4F46E5',fontWeight:700,letterSpacing:'0.1em'}}>DENEME ANALİZİ</div>
-        <div style={{background:'rgba(79,70,229,.2)',border:'1px solid rgba(79,70,229,.4)',borderRadius:6,padding:'3px 10px',fontSize:10,color:'#818CF8',fontWeight:600}}>Net: 120.00</div>
+  <!-- ============ BİR GÜN ============ -->
+  <section class="section" id="nasil" aria-labelledby="nasil-baslik">
+    <div class="wrap day">
+      <div class="day__visual">
+        <svg class="compass-ring" aria-hidden="true" style="width:560px;height:560px;left:50%;top:50%;transform:translate(-50%,-50%)"><use href="#i-compass"/></svg>
+        <figure class="device phone">
+          <img src="/assets/img/screens/iphone-bugun.webp" width="720" height="1490" alt="Bugün ekranı: 09:20'de 15 dakikalık Rutin Problem seansı sırada; altında Matematik, Geometri ve Fizik blokları." loading="lazy" decoding="async">
+        </figure>
       </div>
-      {branches.map((b,i) => {
-        const net = b.correct - b.wrong/4;
-        const pct = Math.round((b.correct/(b.correct+b.wrong))*100);
-        return (
-          <div key={i} style={{marginBottom:10}}>
-            <div style={{display:'flex',justifyContent:'space-between',marginBottom:3}}>
-              <span style={{fontSize:11,color:'#94A3B8'}}>{b.name}</span>
-              <span style={{fontSize:11,color:b.color,fontWeight:600}}>+{net.toFixed(1)} net</span>
+
+      <div>
+        <div class="section-head reveal" style="margin-bottom:36px">
+          <span class="eyebrow">Her gün</span>
+          <h2 id="nasil-baslik">Her sabah <em>aynı dört adım.</em></h2>
+          <p class="lead">Pusula'da edinmen gereken tek alışkanlık bu. Konuyu seçmek, süreyi hesaplamak, sırayı kurmak senin işin değil.</p>
+        </div>
+
+        <ol class="steps">
+          <li class="step reveal">
+            <span class="step__num" aria-hidden="true">1</span>
+            <div>
+              <h3>Bildirim gelir</h3>
+              <p>Her sabah planın hazır olduğunda haber verir. Hatırlatma saatini Ayarlar'dan sen seçersin.</p>
+              <figure class="step-quote"><figcaption>Sabah bildirimi</figcaption><blockquote>Yeni gün. Bugünkü planın hazır; sıradaki seansla başla.</blockquote></figure>
             </div>
-            <div style={{height:4,background:'rgba(255,255,255,.07)',borderRadius:4,overflow:'hidden'}}>
-              <div style={{height:'100%',width:`${pct}%`,background:b.color,borderRadius:4,transition:'width 1s ease'}}/>
+          </li>
+          <li class="step reveal">
+            <span class="step__num" aria-hidden="true">2</span>
+            <div>
+              <h3>Bugün'ü açarsın</h3>
+              <p>En üstte sıradaki seans: ders, konu, saat ve süre. Altında günün saatli akışı var, her blokta Konu ya da Soru rozeti. Gün halkası kaç dakika çalıştığını, seri rozeti üst üste kaç gün çalıştığını gösterir.</p>
             </div>
-          </div>
-        );
-      })}
-      <div style={{marginTop:12,background:'rgba(34,197,94,.08)',border:'1px solid rgba(34,197,94,.2)',borderRadius:8,padding:'8px 10px'}}>
-        <div style={{fontSize:10,color:'#22C55E',fontWeight:700}}>🤖 YZ ANALİZİ</div>
-        <div style={{fontSize:10,color:'#94A3B8',marginTop:3}}>Geometri konularında ilerleme diğer branşlara göre daha düşük.</div>
+          </li>
+          <li class="step reveal">
+            <span class="step__num" aria-hidden="true">3</span>
+            <div>
+              <h3>Odak sayacını başlatırsın</h3>
+              <p>“Seansa Başla” tam ekran bir odak sayacı açar. Sayaç duvar saatine bağlıdır: uygulamayı arka plana atsan, telefonu kilitlesen de doğru ilerler. Kapatırsan seans bitmez; üstte ince bir şerit olarak kalır, dokununca geri açılır.</p>
+            </div>
+          </li>
+          <li class="step reveal">
+            <span class="step__num" aria-hidden="true">4</span>
+            <div>
+              <h3>Bitince işaretlersin</h3>
+              <p>Konu işaretledikçe rota kendini günceller. Bitirdiğin konular unutma eğrisine göre, zamanı gelince tekrar olarak geri döner.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="rescue reveal">
+          <h3>Gün kayarsa plan çökmez</h3>
+          <p>Okul uzadı, deneme geç bitti, hasta oldun. Olur. Üç düğme ve bir ayar işi toparlar:</p>
+          <ul>
+            <li><b>Günü Optimize Et</b><span>Geciken blokları başka güne taşımadan, şu andan itibaren bugünü yeniden dizer.</span></li>
+            <li><b class="amber">Planı Toparla</b><span>İşler güne sığmayınca belirir; geciken işleri boş günlere dağıtır, seansların sırasını korur.</span></li>
+            <li><b>Günü Kapat</b><span>Kalan görevleri tek dokunuşla tamamlar.</span></li>
+            <li><b>Planı Dondur</b><span>Ayarlar'dan açılır; tatildeyken ya da hastayken planı durdurur, çalışma serin ve ilerlemen korunur.</span></li>
+          </ul>
+        </div>
       </div>
     </div>
-  );
-}
+  </section>
 
-function AIPlanlayiciView() {
-  const days = ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
-  const tasks = [null, null, [{s:'Geometri',c:'#4F46E5'},{s:'Fizik',c:'#22C55E'}], [{s:'Türkçe',c:'#F59E0B'}], null, [{s:'Kimya',c:'#EC4899'},{s:'Mat',c:'#4F46E5'}], null];
-  return (
-    <div>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+  <!-- ============ İLK GÜN ============ -->
+  <section class="section" id="baslangic" aria-labelledby="baslangic-baslik" style="background:var(--card);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">İlk gün</span>
+        <h2 id="baslangic-baslik">Dokuz soru. <em>Sonra plan senin.</em></h2>
+        <p class="lead">Kurulum birkaç dakika sürer. Sorular tek tek, tam ekran gelir; dördü isteğe bağlıdır, atladığında Pusula varsayılan ayarlarla devam eder.</p>
+      </div>
+
+      <ol class="onboard">
+        <li class="onboard__step reveal" style="background:var(--paper)">
+          <span class="onboard__time">~30 sn</span>
+          <h3>Hesabını aç</h3>
+          <p>E-posta ve şifreyle ya da Apple ile giriş. Oturum cihazında saklanır, her açılışta giriş istemez.</p>
+        </li>
+        <li class="onboard__step onboard__step--wide reveal" data-delay="1" style="background:var(--paper)">
+          <span class="onboard__time">~2 dk</span>
+          <h3>Tanışma sihirbazı</h3>
+          <p>Verdiğin her cevap planı doğrudan değiştirir. Hedef sıralaman yükseldikçe zayıf konuların daha erken gelir; müsait olmadığın günlere hiç blok konmaz.</p>
+          <ul class="questions" aria-label="Sihirbazdaki sorular">
+            <li>Kaçıncı sınıftasın?</li>
+            <li>Sınav alanın ne?</li>
+            <li>Hedef sıralaman?</li>
+            <li>Çalışma saatlerin?</li>
+            <li>Müsait olmadığın günler? <small>· isteğe bağlı</small></li>
+            <li>Öğrenme hızın? <small>· isteğe bağlı</small></li>
+            <li>Bu konuları okulda gördün mü? <small>· isteğe bağlı</small></li>
+            <li>Netlerin? <small>· isteğe bağlı</small></li>
+            <li>Nasıl başlamak istersin?</li>
+          </ul>
+        </li>
+        <li class="onboard__step reveal" style="background:var(--paper)">
+          <span class="onboard__time">~10 sn</span>
+          <h3>İlk plan kurulur</h3>
+          <p>Sihirbaz biter bitmez yol haritası ve ilk haftanın saatli programı arka planda hazırlanır. Sen beklemezsin; plan hazır olunca yerine oturur.</p>
+        </li>
+        <li class="onboard__step onboard__step--wide reveal" data-delay="1" style="background:var(--paper)">
+          <span class="onboard__time">~1 dk</span>
+          <h3>Koç seni gezdirir</h3>
+          <p>Beş duraklık tur uygulamanın gerçek sekmelerinde ilerler: Konular, Deneme, Plan, Koç ve Bugün. İstersen atlarsın, sonra Ayarlar'dan yeniden başlatırsın.</p>
+          <figure class="coach-bubble">
+            <blockquote>Merhaba, ben Pusula Koç. Bundan sonra çalışma planını birlikte yöneteceğiz. Başlamadan önce her şeyi kısaca göstereyim.</blockquote>
+            <figcaption>Pusula Koç, ilk açılışta</figcaption>
+          </figure>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ PLAN MOTORU ============ -->
+  <section class="section dark" id="plan-motoru" aria-labelledby="motor-baslik">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Plan motoru</span>
+        <h2 id="motor-baslik">Sınava kadar her hafta. <em>Her gün, saatiyle.</em></h2>
+        <p class="lead">Pusula'nın asıl işi plan: konuları haftalara, günlere ve saatlere yerleştirmek, işler kaydığında da yeniden dengelemek.</p>
+      </div>
+
+      <ul class="engine-grid reveal">
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>Yol haritası</h3><span class="tag tag--free">Ücretsiz</span></div>
+          <p>Sınava kadarki bütün haftaları kurar, her konuyu bir haftaya yerleştirir. Ücretsiz sürümde içinde bulunduğun dönem, Pro'da tüm dönemler açık.</p>
+        </li>
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>Haftalık saatli program</h3><span class="tag tag--free">İlk plan ücretsiz</span></div>
+          <p>Konuları güne ve saate oturtur; rutinleri ve molaları da programa yerleştirir. Bir günde en fazla 4 farklı ders çalışırsın.</p>
+        </li>
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>Konu ve soru ayrımı</h3><span class="tag tag--free">Ücretsiz</span></div>
+          <p>Her konu, anlatım ve soru çözümü seanslarına bölünür. Soru seansı her zaman konu seanslarından sonraki bir güne düşer.</p>
+        </li>
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>Ön koşul kilidi</h3><span class="tag tag--free">Ücretsiz</span></div>
+          <p>181 konu bir zincire bağlı. Ön koşulu bitmemiş konu plana giremez.</p>
+        </li>
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>Aralıklı tekrar</h3><span class="tag tag--free">Ücretsiz</span></div>
+          <p>Bitmiş konular unutma eğrisine göre tekrara döner. Tekrar seansı, normal bir seansın yarısı kadar yer kaplar.</p>
+        </li>
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>Gecikmiş görev kurtarma</h3><span class="tag tag--free">Ücretsiz</span></div>
+          <p>Planı Toparla geciken işleri boş günlere dağıtır; Günü Optimize Et hiçbir şeyi taşımadan bugünü yeniden dizer.</p>
+        </li>
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>Kapasite uyarısı</h3><span class="tag tag--free">Ücretsiz</span></div>
+          <p>Sınava kadar yetişmeyecekse önceden söyler ve üç çıkış yolu sunar: otomatik ele, elle seç, hedefi yükselt.</p>
+        </li>
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>Planı Dondur</h3><span class="tag tag--free">Ücretsiz</span></div>
+          <p>Tatil ya da hastalık için plan durur; serin ve ilerlemen korunur.</p>
+        </li>
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>Günlük rutinler</h3><span class="tag tag--pro">Pro</span></div>
+          <p>Paragraf, sayı-kesir problemleri, geometri rutini: her güne sabit bir blok. Taşınmaz, budanmaz.</p>
+        </li>
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>Hafta sonu denemesi</h3><span class="tag tag--pro">Pro</span></div>
+          <p>Pazar günü sabit deneme bloğu; saatini sen ayarlarsın. Deneme günü rutin almaz.</p>
+        </li>
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>Optimum Rota</h3><span class="tag tag--pro">Pro</span></div>
+          <p>Süre yetmiyorsa düşük getirili konuları eler, kalan zamanı en çok net getirecek konulara verir.</p>
+        </li>
+        <li class="engine-item">
+          <div class="engine-item__top"><h3>8 sinyalle kişiselleşir</h3></div>
+          <p>Sınıfın, sınav alanın, hedef sıralaman, günlük ve hafta sonu çalışma süren, çalışamadığın günler, öğrenme hızın, konuyu okulda görüp görmediğin ve deneme netlerin. Hepsini sonradan Ayarlar'dan değiştirebilirsin; yol haritası yeniden düzenlenir, ilerlemen silinmez.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ KOÇ ============ -->
+  <section class="section" id="koc" aria-labelledby="koc-baslik">
+    <div class="wrap coach">
+      <div class="coach__visual">
+        <svg class="compass-ring" aria-hidden="true"><use href="#i-compass"/></svg>
+        <figure class="device phone phone--a">
+          <img src="/assets/img/screens/iphone-rapor.webp" width="720" height="1490" alt="Haftalık koç raporu: güçlü yan, gelişim alanı ve “Ekle” düğmeleriyle önerilen aksiyonlar." loading="lazy" decoding="async">
+        </figure>
+        <figure class="device phone phone--b">
+          <img src="/assets/img/screens/iphone-koc.webp" width="720" height="1490" alt="Pusula Koç ekranı: haftalık koç raporu kartı, unutma eğrisi grafiği ve toplam ilerleme." loading="lazy" decoding="async">
+        </figure>
+      </div>
+
+      <div>
+        <div class="section-head reveal" style="margin-bottom:0">
+          <span class="eyebrow">Pusula Koç</span>
+          <h2 id="koc-baslik">Koçun anlatır. <em>Sen çalışırsın.</em></h2>
+          <p class="lead">Koçun her sabah günün odağını yazar, her hafta gidişatını raporlar. Planın neden böyle kurulduğunu anlatır, girdiğin denemeyi yorumlar. Sohbet değil: sen mesaj yazmazsın, koç sana anlatır.</p>
+        </div>
+
+        <ul class="coach-list reveal">
+          <li>
+            <div class="coach-list__head"><h3>Günlük brifing</h3><span><span class="tag tag--free">İçgörüler ücretsiz</span> <span class="tag tag--pro">Yapay zekâ anlatımı Pro</span></span></div>
+            <p>Günün tek cümlelik odağı ve dört kural tabanlı içgörü: unutma alarmı, hata DNA'sı, momentum sinyali ve günlük plan gerekçeleri.</p>
+          </li>
+          <li>
+            <div class="coach-list__head"><h3>Haftalık koç raporu</h3><span class="tag tag--pro">Pro</span></div>
+            <p>Hafta kapanınca raporun hazır olur: yorum, güçlü yanın, gelişim alanın, ders ders tamamlanma oranı, en çok yanlış yaptığın konular ve önerilen aksiyonlar. Beğendiğin aksiyonu “Ekle” düğmesiyle plana alırsın.</p>
+          </li>
+          <li>
+            <div class="coach-list__head"><h3>Deneme analizi ve “neden bu plan”</h3><span class="tag tag--pro">Pro</span></div>
+            <p>Girdiğin deneme sonucunu yorumlar, zayıf alanlarını adlandırır; planın o haftaki sırasını gerekçelendirir.</p>
+          </li>
+          <li>
+            <div class="coach-list__head"><h3>Koç kişiliği ve proaktif uyarı</h3><span class="tag tag--pro">Pro</span></div>
+            <p>Anlatımın tonunu seçersin: Mentor, Stratejist ya da Arkadaş. Gidişat bozulunca koç kendiliğinden uyarır.</p>
+          </li>
+        </ul>
+
+        <div class="desk reveal">
+          <p>Koç masasında ayrıca:</p>
+          <ul>
+            <li>Unutma eğrisi</li><li>Net Tahmini</li><li>Ders analizi</li><li>Tutarlılık ve tempo</li><li>Dikkat Sinyalleri</li><li>Kader Simülasyonu</li>
+          </ul>
+        </div>
+
+        <div class="callout reveal">
+          <svg aria-hidden="true"><use href="#i-info"/></svg>
+          <p>Pro üyelikte günde 20 AI işlemi hakkın olur; pratikte hiç bitmez. Günlük brifingin anlatımı bu hakka sayılmaz. İstersen yapay zekâyı Ayarlar'dan tamamen kapatırsın; o zaman hiçbir yapay zekâ isteği gönderilmez, kural tabanlı içgörüler görünmeye devam eder.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MÜFREDAT ============ -->
+  <section class="section" id="mufredat" aria-labelledby="mufredat-baslik" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Müfredat</span>
+        <h2 id="mufredat-baslik">YKS'nin tamamı. <em>Alanına göre süzülür.</em></h2>
+        <p class="lead">TYT, AYT ve YDT'de 320 konu, 14 ders. Sınav alanını seçtiğinde konu havuzu ona göre kurulur ve alanının öncelikli dersleri öne alınır.</p>
+      </div>
+
+      <div class="curriculum">
+        <div class="panel reveal">
+          <div class="big-nums">
+            <div><b>165</b><span>TYT KONUSU</span></div>
+            <div><b>137</b><span>AYT KONUSU</span></div>
+            <div><b>18</b><span>YDT KONUSU</span></div>
+          </div>
+          <h3>Alana göre kapsam</h3>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr><th scope="col">Alan</th><th scope="col" class="num">Konu</th><th scope="col" class="num">Ders</th><th scope="col" class="num"><span class="hide-sm">Planlanan </span>içerik</th></tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Sayısal<small>TYT'nin 10 dersi; Matematik, Geometri, Fizik, Kimya ve Biyoloji'de AYT konularıyla</small></th><td class="num">228</td><td class="num">10</td><td class="num">~1.103 sa</td></tr>
+                <tr><th scope="row">Eşit Ağırlık<small>Sayısal alanının dersleri, Edebiyat, Psikoloji ve Sosyoloji</small></th><td class="num">240</td><td class="num">13</td><td class="num">~1.096 sa</td></tr>
+                <tr><th scope="row">Sözel<small>Edebiyat, Tarih, Coğrafya, Felsefe, Psikoloji, Sosyoloji ve tüm TYT dersleri</small></th><td class="num">239</td><td class="num">13</td><td class="num">~1.046 sa</td></tr>
+                <tr><th scope="row">Dil<small>YDT İngilizce ve tüm TYT dersleri</small></th><td class="num">183</td><td class="num">11</td><td class="num">~785 sa</td></tr>
+                <tr><th scope="row">Yalnız TYT<small>Türkçe, Matematik, Geometri, Fizik, Kimya, Biyoloji, Tarih, Coğrafya, Felsefe, Din Kültürü</small></th><td class="num">165</td><td class="num">10</td><td class="num">~698 sa</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel reveal" data-delay="1">
+          <h3>Derse göre konu sayısı</h3>
+          <p class="note">Toplam 320 konu</p>
+          <ul class="bars">
+            <li><span>Tarih</span><i style="width:100%"></i><b>52</b></li>
+            <li><span>Fizik</span><i style="width:71.2%"></i><b>37</b></li>
+            <li><span>Matematik</span><i style="width:63.5%"></i><b>33</b></li>
+            <li><span>Coğrafya</span><i style="width:59.6%"></i><b>31</b></li>
+            <li><span>Türkçe</span><i style="width:57.7%"></i><b>30</b></li>
+            <li><span>Biyoloji</span><i style="width:44.2%"></i><b>23</b></li>
+            <li><span>Kimya</span><i style="width:40.4%"></i><b>21</b></li>
+            <li><span>Felsefe</span><i style="width:36.5%"></i><b>19</b></li>
+            <li><span>İngilizce</span><i style="width:34.6%"></i><b>18</b></li>
+            <li><span>Edebiyat</span><i style="width:32.7%"></i><b>17</b></li>
+            <li><span>Geometri</span><i style="width:30.8%"></i><b>16</b></li>
+            <li><span>Din Kültürü</span><i style="width:28.8%"></i><b>15</b></li>
+            <li><span>Sosyoloji</span><i style="width:9.6%"></i><b>5</b></li>
+            <li><span>Psikoloji</span><i style="width:5.8%"></i><b>3</b></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FİYATLAR ============ -->
+  <section class="section" id="fiyatlar" aria-labelledby="fiyat-baslik" style="background:var(--card);border-top:1px solid var(--line)">
+    <div class="wrap">
+      <div class="section-head section-head--center reveal">
+        <span class="eyebrow">Fiyatlar</span>
+        <h2 id="fiyat-baslik">Önce ücretsiz başla. <em>Sonra üyeliğini seç.</em></h2>
+        <p class="lead">Uygulamayı indirmek ve ilk planını kurmak ücretsiz. Pusula Pro sınava kadarki bütün rotayı, rutinleri ve koç raporlarını açar.</p>
+      </div>
+
+      <div class="trial-banner trial hide-android reveal">
+        <div class="trial-banner__days" aria-hidden="true"><div><b>7</b><br><span>GÜN</span></div></div>
         <div>
-          <div style={{fontSize:10,color:'#4F46E5',fontWeight:700,letterSpacing:'0.1em'}}>HAFTALIK AKILLI PLANLAYICI</div>
-          <div style={{fontSize:9,color:'#64748B'}}>Yapay zeka tarafından önerilen</div>
+          <h3>7 gün dene. Beğenmezsen iptal et, ücret yok.</h3>
+          <p>Yeni üyeliklerde 7 gün ücretsiz deneme. Deneme bitiminden en az 24 saat önce iptal edersen ücret alınmaz; etmezsen seçtiğin plan otomatik yenilenir. Deneme boyunca Pro'nun tamamı açıktır.</p>
         </div>
-        <div style={{background:'rgba(34,197,94,.2)',border:'1px solid rgba(34,197,94,.4)',borderRadius:6,padding:'3px 8px',fontSize:9,color:'#22C55E',fontWeight:700}}>✓ ONAYLA</div>
-      </div>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:4}}>
-        {days.map((d,i) => (
-          <div key={i}>
-            <div style={{textAlign:'center',fontSize:9,color: i===2 ? '#818CF8' : '#64748B',marginBottom:3,fontWeight: i===2 ? 700 : 400}}>{d}</div>
-            <div style={{
-              background: i===2 ? 'rgba(79,70,229,.15)' : 'rgba(255,255,255,.03)',
-              border:`1px solid ${i===2 ? 'rgba(79,70,229,.4)' : 'rgba(255,255,255,.06)'}`,
-              borderRadius:6, padding:'4px 3px', minHeight:70, display:'flex', flexDirection:'column', gap:2
-            }}>
-              {tasks[i] ? tasks[i].map((t,j) => (
-                <div key={j} style={{background:t.c+'33',border:`1px solid ${t.c}66`,borderRadius:3,padding:'2px 3px',fontSize:8,color:t.c,fontWeight:600,textAlign:'center'}}>{t.s}</div>
-              )) : <div style={{fontSize:8,color:'#1E293B',textAlign:'center',marginTop:8}}>—</div>}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div style={{marginTop:10,background:'rgba(255,255,255,.03)',borderRadius:8,padding:'8px',border:'1px solid rgba(255,255,255,.06)',display:'flex',gap:8,alignItems:'center'}}>
-        <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(135deg,#4F46E5,#7C3AED)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,flexShrink:0}}>🤖</div>
-        <div style={{fontSize:10,color:'#94A3B8'}}>Saat 23:04 virajındayız! Geometri bloğuna odaklan.</div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── FOMO BANNER (12h live countdown) ─── */
-function FomoBanner({ tweaks }) {
-  const [remaining, setRemaining] = useState({h:'12',m:'00',s:'00'});
-
-  useEffect(() => {
-    const STORAGE_KEY = 'pusula_fomo_deadline';
-    const WINDOW_MS = 12 * 60 * 60 * 1000;
-
-    const safeGet = () => { try { return localStorage.getItem(STORAGE_KEY); } catch { return null; } };
-    const safeSet = (v) => { try { localStorage.setItem(STORAGE_KEY, v); } catch {} };
-
-    let deadline = parseInt(safeGet() || '0', 10);
-    const now = Date.now();
-    if (!deadline || deadline < now) {
-      deadline = now + WINDOW_MS;
-      safeSet(String(deadline));
-    }
-
-    const tick = () => {
-      let diff = deadline - Date.now();
-      if (diff <= 0) {
-        deadline = Date.now() + WINDOW_MS;
-        safeSet(String(deadline));
-        diff = WINDOW_MS;
-      }
-      const totalSec = Math.floor(diff / 1000);
-      const h = String(Math.floor(totalSec / 3600)).padStart(2,'0');
-      const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2,'0');
-      const s = String(totalSec % 60).padStart(2,'0');
-      setRemaining({h, m, s});
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  return (
-    <div className="fixed top-0 left-0 right-0 z-[110] bg-gradient-to-r from-red-600 via-orange-500 to-red-600 text-white shadow-[0_4px_24px_rgba(239,68,68,.45)]"
-         style={{fontFamily:'Inter,sans-serif'}}>
-      <div className="max-w-[1200px] mx-auto px-3 sm:px-4 py-1.5 sm:py-2 flex items-center justify-center gap-2 sm:gap-4 text-[11px] sm:text-[13px] font-bold tracking-tight flex-wrap">
-        <span className="hidden sm:inline whitespace-nowrap drop-shadow">
-          {tweaks?.fomoText || '⚠️ 2027 YKS Kurucu Üye Fiyatı İçin Son 12 Saat!'}
-        </span>
-        <span className="sm:hidden whitespace-nowrap text-[11px]">⚠️ Kurucu Üye Fiyatı Son 12 Saat!</span>
-
-        <span className="flex items-center gap-1 bg-black/30 border border-white/30 rounded-md px-2 py-0.5 font-mono tabular-nums tracking-wider ring-1 ring-white/20">
-          <span>{remaining.h}</span>:<span>{remaining.m}</span>:<span className="text-yellow-200">{remaining.s}</span>
-        </span>
-
-        <span className="hidden sm:inline opacity-50">·</span>
-
-        <span className="inline-flex items-center gap-1 bg-red-900/60 border border-red-300/40 rounded-md px-2 py-0.5 animate-pulse">
-          🔥 <span className="hidden sm:inline">Kalan</span> Kontenjan:&nbsp;<span className="text-yellow-200 font-extrabold">{tweaks?.kontenjan ?? 11}</span>
-        </span>
-      </div>
-    </div>
-  );
-}
-
-/* ─── PRICE COMPARISON (Hero altı) ─── */
-function PriceComparison() {
-  const classicItems = [
-    {i:'📚', t:'Yıllık dershane ücreti'},
-    {i:'👨‍🏫', t:'Haftalık özel ders saatleri'},
-    {i:'🏃', t:'Şehir içi ulaşım & yorgunluk'},
-    {i:'😩', t:'Karar yorgunluğu (bedava!)'},
-    {i:'💸', t:'Sürpriz ek ücretler & zamlar'},
-  ];
-  const proItems = [
-    {i:'🤖', t:'Sınırsız 7/24 AI planlama'},
-    {i:'📊', t:'Anlık net analizi & projektör'},
-    {i:'🗺️', t:'Sınava kadar kişisel yol haritası'},
-    {i:'⏱️', t:'Tek seferlik ödeme — aylık taksit yok'},
-    {i:'🎯', t:'Sınava kadar tam erişim, sürpriz yok'},
-  ];
-
-  return (
-    <section className="relative px-4 sm:px-6 py-16 sm:py-20">
-      <div className="absolute inset-0 pointer-events-none" style={{background:'radial-gradient(ellipse 60% 60% at 50% 30%, rgba(239,68,68,.06) 0%, transparent 70%)'}}/>
-      <div className="max-w-[1100px] mx-auto relative z-[1]">
-        <div className="text-center mb-10 sm:mb-14 reveal">
-          <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-400/30 rounded-full px-3 py-1 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"/>
-            <span className="text-[11px] sm:text-xs font-bold tracking-wider text-red-300">DURDURUP 30 SANİYE OKU</span>
-          </div>
-          <h2 className="font-black tracking-tight leading-[1.15]" style={{fontSize:'clamp(24px,3.4vw,40px)'}}>
-            Velinin Cüzdanına 150.000 TL'lik <br className="hidden sm:block"/>
-            Bir Soru: <span className="bg-gradient-to-r from-emerald-300 to-indigo-300 bg-clip-text text-transparent">Hangisi Daha Akıllı?</span>
-          </h2>
-          <p className="text-slate-400 text-sm sm:text-base mt-3 max-w-xl mx-auto">Aynı hedef. İki yol. Aradaki fark, bir aile arabası fiyatı.</p>
-        </div>
-
-        <div className="grid md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 items-stretch">
-          {/* KLASİK — SOL */}
-          <div className="relative rounded-2xl border border-red-500/30 bg-gradient-to-br from-red-950/40 to-slate-950/60 p-6 sm:p-8 reveal left">
-            <div className="inline-flex items-center gap-1.5 bg-red-500/15 border border-red-400/30 rounded-md px-2.5 py-1 mb-4">
-              <span className="text-base leading-none">❌</span>
-              <span className="text-[11px] font-extrabold text-red-300 tracking-wider">KLASİK YÖNTEM</span>
-            </div>
-            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-100 leading-tight mb-1">Yıllık Dershane + Özel Ders</h3>
-            <p className="text-xs text-slate-500 mb-6">Geleneksel rota — her sene aynı film.</p>
-
-            <ul className="space-y-2.5 mb-7">
-              {classicItems.map((it,i) => (
-                <li key={i} className="flex items-start gap-2.5 text-[13px] sm:text-sm text-slate-400">
-                  <span className="text-base leading-tight">{it.i}</span>
-                  <span className="leading-snug">{it.t}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="border-t border-red-500/15 pt-5">
-              <div className="text-[11px] text-red-300/80 font-bold tracking-wider mb-1">TAHMİNİ TOPLAM MASRAF</div>
-              <div className="flex items-end gap-2">
-                <span className="text-4xl sm:text-5xl font-black tracking-tighter text-red-300 line-through decoration-red-500/70 decoration-[3px]">~150.000 TL</span>
-              </div>
-              <div className="text-[11px] text-slate-500 mt-2 italic">+ Stres, karar yorgunluğu ve uyku kaybı <span className="text-red-300/90">BEDAVA</span> dahildir.</div>
-            </div>
-          </div>
-
-          {/* VS rozeti */}
-          <div className="hidden md:flex items-center justify-center">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-slate-900 font-black text-base flex items-center justify-center shadow-[0_0_30px_rgba(251,191,36,.5)] ring-4 ring-yellow-400/20">
-              VS
-            </div>
-          </div>
-
-          {/* PUSULA YKS PRO — SAĞ */}
-          <div className="relative rounded-2xl border-2 border-emerald-400/40 bg-gradient-to-br from-indigo-950/50 via-slate-950/60 to-purple-950/40 p-6 sm:p-8 ring-2 ring-emerald-400/20 shadow-[0_0_60px_rgba(79,70,229,.25)] reveal right">
-            <div className="absolute -top-3 right-5 bg-gradient-to-r from-emerald-500 to-indigo-500 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full shadow-[0_4px_18px_rgba(16,185,129,.4)]">
-              ✨ AKILLI SEÇİM
-            </div>
-
-            <div className="inline-flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-400/40 rounded-md px-2.5 py-1 mb-4">
-              <span className="text-base leading-none">✅</span>
-              <span className="text-[11px] font-extrabold text-emerald-300 tracking-wider">PUSULA YKS PRO</span>
-            </div>
-            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-50 leading-tight mb-1">Sınava Kadar 7/24 Kişisel Yapay Zeka</h3>
-            <p className="text-xs text-indigo-300/80 mb-6">Veri odaklı rota — bir kez öde, sınava kadar koşa koşa.</p>
-
-            <ul className="space-y-2.5 mb-7">
-              {proItems.map((it,i) => (
-                <li key={i} className="flex items-start gap-2.5 text-[13px] sm:text-sm text-slate-200">
-                  <span className="text-base leading-tight">{it.i}</span>
-                  <span className="leading-snug">{it.t}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="border-t border-emerald-400/20 pt-5">
-              <div className="text-[11px] text-emerald-300 font-bold tracking-wider mb-1">TEK SEFERLİK FİYAT</div>
-              <div className="flex items-end gap-2 flex-wrap">
-                <span className="text-sm font-bold text-slate-500 line-through decoration-slate-500/70 decoration-2">10.499 TL</span>
-                <span className="text-5xl sm:text-6xl font-black tracking-tighter bg-gradient-to-r from-emerald-300 via-indigo-300 to-purple-300 bg-clip-text text-transparent leading-none">4.199 TL</span>
-                <span className="bg-emerald-500/20 border border-emerald-400/40 rounded-md px-2 py-0.5 text-[11px] font-black text-emerald-300 tracking-wider animate-pulse">%60 İNDİRİM</span>
-              </div>
-              <div className="text-[11px] text-slate-400 mt-2">Sınava kadar erişim. Aylık taksit yok, sürpriz ücret yok.</div>
-            </div>
-
-            <a href="https://app.pusulayks.com/register" target="_blank" rel="noopener noreferrer" className="block mt-6">
-              <button className="gradient-btn w-full py-3.5 rounded-xl text-white font-extrabold text-[15px] tracking-tight ring-4 ring-indigo-500/30 hover:ring-indigo-400/60 transition-all"
-                      style={{animation:'pulse-glow 2s ease infinite', fontFamily:'Inter,sans-serif', border:'none', cursor:'pointer', position:'relative', zIndex:1}}>
-                🚀 %60 Erken Kayıt Fırsatını Yakala
-              </button>
-            </a>
-            <div className="text-center text-[11px] text-slate-500 mt-3">11 kişi sayfada · {`Kontenjan tükenmek üzere`}</div>
-          </div>
-        </div>
-
-        {/* Tasarruf vurgu çubuğu */}
-        <div className="mt-8 sm:mt-10 max-w-[820px] mx-auto bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-emerald-500/10 border border-emerald-400/30 rounded-xl px-5 py-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-center reveal">
-          <span className="text-2xl">💰</span>
-          <span className="text-sm sm:text-base text-slate-200">Net tasarruf: <span className="font-black text-emerald-300 text-lg">~145.800 TL</span> <span className="text-slate-500">— üstüne, hiç stres yok.</span></span>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── NAVBAR ─── */
-function Navbar({ tweaks }) {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-  return (
-    <nav style={{
-      position:'fixed', top:36, left:0, right:0, zIndex:100,
-      background: scrolled ? 'rgba(11,17,32,.95)' : 'rgba(11,17,32,.4)',
-      backdropFilter:'blur(20px)',
-      borderBottom: scrolled ? '1px solid rgba(255,255,255,.08)' : 'none',
-      transition:'all .3s ease',
-      padding:'0 24px',
-    }}>
-      <div className="nav-inner" style={{maxWidth:1200, margin:'0 auto', height:64, display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-        <div style={{display:'flex',alignItems:'center',gap:8}}>
-          <img src="./favicon.png" alt="Pusula YKS" style={{height:48, width:'auto', objectFit:'contain'}} />
-          <span className="nav-brand-text" style={{fontWeight:800, fontSize:18, letterSpacing:'-0.02em'}}>Pusula <span style={{color:'#818CF8'}}>YKS</span></span>
-        </div>
-        <div className="nav-links" style={{display:'flex',gap:32}}>
-          {['Özellikler','Nasıl Çalışır','Fiyatlandırma'].map(l => (
-            <a key={l} href={`#${l.toLowerCase().replace(' ','-')}`} className="nav-link"
-              style={{fontSize:14, color:'#94A3B8', textDecoration:'none', fontWeight:500}}>{l}</a>
-          ))}
-        </div>
-        <a href="https://app.pusulayks.com/register" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}>
-          <button className="gradient-btn" style={{
-            position:'relative', zIndex:1,
-            color:'white', border:'none', borderRadius:10, padding:'8px 16px',
-            fontFamily:'Inter,sans-serif', fontSize:13, fontWeight:700, cursor:'pointer',
-            letterSpacing:'-0.01em',
-            boxShadow:'0 0 0 2px rgba(99,102,241,.35), 0 8px 24px rgba(79,70,229,.35)'
-          }}>
-            🔥 %60 Erken Kayıt
-          </button>
+        <a class="store-btn store-btn--light hide-android" href="https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr">
+          <svg aria-hidden="true"><use href="#i-apple"/></svg>
+          <span class="store-btn__text"><span class="store-btn__small">7 gün ücretsiz deneme</span><span class="store-btn__big">App Store'dan indir</span></span>
         </a>
       </div>
-    </nav>
-  );
-}
 
-/* ─── HERO ─── */
-function Hero({ tweaks }) {
-  const [typed, setTyped] = useState('');
-  const full = tweaks.heroTitle;
-  useEffect(() => {
-    let i = 0;
-    const t = setInterval(() => {
-      setTyped(full.slice(0, i));
-      i++;
-      if (i > full.length) clearInterval(t);
-    }, 18);
-    return () => clearInterval(t);
-  }, [full]);
+      <!-- Web ödemesi (iyzico) açılınca Aylık ve Yıllık kartlarına "Web + mobil" etiketi eklenebilir.
+           Web'de Yıllık tek seferlik ödemedir, yenilenmez; 3 Aylık web'de yoktur. -->
+      <p class="android-inline only-android" style="max-width:none;margin:0 0 20px">
+        <svg aria-hidden="true"><use href="#i-info"/></svg>
+        <span>Pusula Pro şu an yalnız iPhone ve iPad uygulamasından alınabiliyor<span class="trial">; 7 günlük ücretsiz deneme de orada</span>. Android'de şimdilik web'de ücretsiz planınla başlayabilirsin.</span>
+      </p>
 
-  return (
-    <section className="hero-section" style={{
-      minHeight:'100vh', display:'flex', alignItems:'center',
-      padding:'130px 24px 40px',
-      background:'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(79,70,229,.15) 0%, transparent 70%)',
-      position:'relative', overflow:'hidden'
-    }}>
-      {/* Background grid */}
-      <div style={{
-        position:'absolute', inset:0, zIndex:0,
-        backgroundImage:`linear-gradient(rgba(79,70,229,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,.06) 1px, transparent 1px)`,
-        backgroundSize:'60px 60px',
-        maskImage:'radial-gradient(ellipse 80% 80% at center, black 40%, transparent 100%)'
-      }}/>
-      {/* Glow orbs */}
-      <div style={{position:'absolute',top:'20%',left:'5%',width:400,height:400,background:'rgba(79,70,229,.08)',borderRadius:'50%',filter:'blur(80px)',pointerEvents:'none'}}/>
-      <div style={{position:'absolute',bottom:'20%',right:'5%',width:300,height:300,background:'rgba(124,58,237,.06)',borderRadius:'50%',filter:'blur(80px)',pointerEvents:'none'}}/>
+      <div class="plans">
+        <article class="plan reveal">
+          <div class="plan__name"><h3>Aylık</h3></div>
+          <div class="plan__price"><b>699,99</b><span>TL / ay</span></div>
+          <div class="plan__per">Esnek başlangıç</div>
+          <p>Otomatik yenilenir, istediğin zaman iptal edebilirsin.</p>
+          <div class="plan__foot"><hr><span class="note"><svg aria-hidden="true"><use href="#i-apple"/></svg>Uygulama içinden, App Store ile</span></div>
+        </article>
 
-      <div className="hero-grid" style={{maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:'1fr 1fr', gap:64, alignItems:'center', position:'relative', zIndex:1, width:'100%'}}>
-        {/* Left */}
-        <div className="animate-fade-up">
-          <div style={{
-            display:'inline-flex', alignItems:'center', gap:8,
-            background:'rgba(79,70,229,.12)', border:'1px solid rgba(79,70,229,.3)',
-            borderRadius:100, padding:'6px 14px', marginBottom:24
-          }}>
-            <span style={{width:6,height:6,borderRadius:'50%',background:'#22C55E',animation:'blink 1.5s infinite',display:'inline-block'}}/>
-            <span style={{fontSize:12,color:'#818CF8',fontWeight:700,letterSpacing:'0.05em'}}>2027 YKS · KURUCU ÜYE ERKEN KAYIT AÇIK</span>
-          </div>
+        <article class="plan reveal" data-delay="1">
+          <div class="plan__name"><h3>3 Aylık</h3></div>
+          <div class="plan__price"><b>1.999,99</b><span>TL</span></div>
+          <div class="plan__per">Ayda 667 TL'ye gelir</div>
+          <p>Üç ayda bir otomatik yenilenir. Hazırlığa sezonun ikinci yarısında başlıyorsan sana göre.</p>
+          <div class="plan__foot"><hr><span class="note"><svg aria-hidden="true"><use href="#i-apple"/></svg>Uygulama içinden, App Store ile</span></div>
+        </article>
 
-          <h1 style={{fontSize:'clamp(32px,4vw,54px)', fontWeight:900, lineHeight:1.1, letterSpacing:'-0.03em', marginBottom:24, position:'relative'}}>
-            {/* Görünmez metin: Yazı animasyonunda yüksekliğin sıçramasını engeller */}
-            <span style={{visibility:'hidden', whiteSpace:'pre-wrap', display:'block'}}>{full}</span>
-            <span style={{position:'absolute', top:0, left:0, right:0}}>
-              {typed}
-              <span style={{animation:'blink 1s infinite',display:'inline-block',width:3,height:'0.85em',background:'#4F46E5',marginLeft:2,verticalAlign:'middle'}}/>
-            </span>
-          </h1>
+        <article class="plan plan--featured reveal" data-delay="2">
+          <span class="plan__badge">En avantajlı</span>
+          <div class="plan__name"><h3>Yıllık</h3></div>
+          <div class="plan__price"><b>5.899,99</b><span>TL</span></div>
+          <div class="plan__per">Ayda 492 TL'ye gelir <span class="tag tag--free save">%30 avantaj</span></div>
+          <p class="plan__compare">Aylık planla 12 ay: <s>8.399,88 TL</s></p>
+          <p>Satın aldığın günden itibaren 12 ay geçerli; sınav tarihine bağlı değil, sınav sonrasını da kapsar. App Store'da her yıl otomatik yenilenir; dönem bitiminden en az 24 saat önce iptal edebilirsin.</p>
+          <div class="plan__foot"><hr><span class="note"><svg aria-hidden="true"><use href="#i-apple"/></svg>Uygulama içinden, App Store ile</span></div>
+        </article>
+      </div>
 
-          <p style={{fontSize:17, color:'#94A3B8', lineHeight:1.75, marginBottom:36, maxWidth:520}}>
-            Masada <em style={{color:'#E2E8F0',fontStyle:'normal'}}>"Bugün ne çalışsam?"</em> derdine son. Tüm yılını senin yerine planlayan dijital koçunla tanış. <strong style={{color:'#E2E8F0'}}>Aylık taksit yok, sürpriz ücret yok.</strong>
-          </p>
+      <ul class="pay-notes">
+        <li class="reveal"><b>Ödemeyi Apple alır</b>Tahsilat App Store üzerinden yapılır; kart bilgin uygulamaya girilmez.</li>
+        <li class="reveal" data-delay="1"><b>Abonelik olarak yenilenir</b>App Store'dan alınan üç plan da dönem sonunda yenilenir; dönem bitmeden en az 24 saat önce iptal edersen yenilenmez.</li>
+        <li class="reveal" data-delay="2"><b>İptal uygulamadan</b>Uygulama seni App Store'daki abonelik sayfana götürür; iptali oradan yaparsın.</li>
+        <li class="reveal" data-delay="3"><b>Cihaz değiştirirsen</b>“Satın alımları geri yükle” ile üyeliğin yeni cihaza gelir; ikinci kez ödemezsin.</li>
+      </ul>
 
-          <div className="hero-cta-container" style={{display:'flex', gap:18, alignItems:'center', flexWrap:'wrap'}}>
-            <a href="https://app.pusulayks.com/register" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}>
-            <button className="gradient-btn ring-4 ring-indigo-500/40 hover:ring-indigo-400/70 ring-offset-2 ring-offset-[#0B1120] transition-all" style={{
-              position:'relative', zIndex:1,
-              color:'white', border:'none', borderRadius:14, padding:'14px 28px',
-              fontFamily:'Inter,sans-serif', fontSize:16, fontWeight:800, cursor:'pointer',
-              letterSpacing:'-0.01em', animation:'pulse-glow 1.8s ease infinite',
-              display:'flex', flexDirection:'column', alignItems:'center', lineHeight:1.2
-            }}>
-              <span>🚀 {tweaks.ctaText}</span>
-              <span style={{fontSize:11, fontWeight:600, opacity:.85, marginTop:3, letterSpacing:'0.02em'}}>✨ 4.199 TL · Tek Seferlik · Sınava Kadar</span>
-            </button>
-            </a>
-            <div style={{display:'flex', alignItems:'center', gap:12}}>
-              <div style={{display:'flex'}}>
-                {['#4F46E5','#7C3AED','#22C55E','#F59E0B','#EC4899'].map((c,i) => (
-                  <div key={i} style={{width:28,height:28,borderRadius:'50%',background:c,border:'2px solid #0B1120',marginLeft: i>0 ? -8 : 0}}/>
-                ))}
-              </div>
-              <div>
-                <div style={{fontSize:13,fontWeight:700,color:'#E2E8F0'}}>2.400+ veli</div>
-                <div style={{fontSize:11,color:'#64748B'}}>çoktan kayıt yaptırdı</div>
-              </div>
-            </div>
-          </div>
+      <!-- data-trial="off" iken deneme bandı gizlenir; fiyat bölümü çağrısız kalmasın diye bu düğme belirir -->
+      <div class="trial-off-cta hide-android">
+        <a class="store-btn" href="https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr">
+          <svg aria-hidden="true"><use href="#i-apple"/></svg>
+          <span class="store-btn__text">
+            <span class="store-btn__small">iPhone ve iPad için</span>
+            <span class="store-btn__big">App Store'dan indir</span>
+          </span>
+        </a>
+      </div>
 
-          <div className="hero-stats-container" style={{display:'flex', gap:24, marginTop:36}}>
-            {[{v:'~145.800₺',l:'Net Tasarruf'},{v:'%97',l:'Memnuniyet'},{v:'4.2x',l:'Verimlilik'}].map((s,i) => (
-              <div key={i}>
-                <div style={{fontSize:26,fontWeight:900,color:'#818CF8',letterSpacing:'-0.03em'}}>{s.v}</div>
-                <div style={{fontSize:11,color:'#64748B',marginTop:2}}>{s.l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right — App mockup */}
-        <div className="app-mockup-wrapper" style={{display:'flex', justifyContent:'center', width:'100%'}}>
-          <div className="app-mockup-scale" style={{width:'100%', display:'flex', justifyContent:'center'}}>
-            <div className="app-mockup-float" style={{animation:'float 5s ease-in-out infinite', width:'100%', display:'flex', justifyContent:'center'}}>
-              <MiniDashboard />
-            </div>
-          </div>
+      <div class="compare reveal">
+        <h3>Ücretsiz ve Pro</h3>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr><th scope="col">Özellik</th><th scope="col">Ücretsiz</th><th scope="col">Pro</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Plan üretimi</th><td>Hesap başına 1 kez</td><td>Sınırsız üretim ve yenileme</td></tr>
+              <tr><th scope="row">Yol haritası</th><td>Yalnız içinde bulunduğun dönem<small>Sınava 90 gün ya da daha fazla varsa ay, daha azsa hafta</small></td><td>Sınava kadar tüm dönemler</td></tr>
+              <tr><th scope="row">Günlük saatli program</th><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td></tr>
+              <tr><th scope="row">Konu takibi, arama, geçmiş</th><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td></tr>
+              <tr><th scope="row">Deneme girişi ve net takibi</th><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td></tr>
+              <tr><th scope="row">Odak seansı</th><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td></tr>
+              <tr><th scope="row">Günü Kapat, Planı Toparla, Günü Optimize Et</th><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td></tr>
+              <tr><th scope="row">Günlük brifing içgörüleri</th><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var (kural tabanlı)</span></td><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var + yapay zekâ anlatımı</span></td></tr>
+              <tr><th scope="row">Sabah rutinleri ve hafta sonu denemesi</th><td><span class="no"><svg aria-hidden="true"><use href="#i-dash"/></svg>Yok</span></td><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td></tr>
+              <tr><th scope="row">Optimum Rota</th><td><span class="no"><svg aria-hidden="true"><use href="#i-dash"/></svg>Yok</span></td><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td></tr>
+              <tr><th scope="row">Haftalık koç raporu</th><td><span class="no"><svg aria-hidden="true"><use href="#i-dash"/></svg>Yok</span></td><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td></tr>
+              <tr><th scope="row">Deneme analizi ve “neden bu plan”</th><td><span class="no"><svg aria-hidden="true"><use href="#i-dash"/></svg>Yok</span></td><td><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Var</span></td></tr>
+              <tr><th scope="row">AI işlem hakkı</th><td><span class="no"><svg aria-hidden="true"><use href="#i-dash"/></svg>Yok</span></td><td>Günde 20</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
-    </section>
-  );
-}
 
-/* ─── FEATURES ─── */
-function Features() {
-  const features = [
-    {
-      icon: <IconBrain />, color:'#4F46E5',
-      badge:'AI Analizi',
-      title:'Günlük AI Koç & Planlayıcı',
-      desc:'Bugün ne çalışacağım derdine son. Yapay zeka, eksiklerine göre günlük odaklanman gereken blokları belirler ve "Saat 23:04 virajındayız" gibi anlık motivasyon bildirimleri sunar.',
-      tags:['Akıllı Planlama','Bildirimler']
-    },
-    {
-      icon: <IconTarget />, color:'#7C3AED',
-      badge:'Net Analizi',
-      title:'Deneme & Branş Analizi',
-      desc:'TYT, AYT ve YDT denemelerinin kimliğini ve branş bazlı yanlışlarını gir. Algoritma müfredat vitesini otomatik güncellesin ve zayıf noktalarını göstersin.',
-      tags:['TYT','AYT','YDT']
-    },
-    {
-      icon: <IconChart />, color:'#22C55E',
-      badge:'Projeksiyon',
-      title:'Net Projektör & Unutma Eğrisi',
-      desc:'Sadece bugünü değil, geleceği gör. Geçmiş verilerine dayanarak hedefine ne zaman ulaşacağını gösteren projeksiyon grafikleri ve Ebbinghaus hafıza analizi.',
-      tags:['Ebbinghaus','Grafik','Projeksiyon']
-    },
-    {
-      icon: <IconMap />, color:'#F59E0B',
-      badge:'Yol Haritası',
-      title:'Kişiselleştirilmiş Yol Haritası',
-      desc:'Hedeflenen üniversiteye ne kadar kaldığını "Tahmini Bitiş" sayaçlarıyla anlık takip et. 53 Gün, 86 Konu Tamam — ne zaman hazır olacağını tam olarak bil.',
-      tags:['Sayaç','Hedef Takibi']
-    },
-  ];
-
-  return (
-    <section id="özellikler" style={{padding:'100px 24px', position:'relative'}}>
-      <div style={{
-        position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)',
-        width:'70%', height:'60%',
-        background:'radial-gradient(ellipse, rgba(79,70,229,.05) 0%, transparent 70%)',
-        pointerEvents:'none'
-      }}/>
-      <div style={{maxWidth:1200, margin:'0 auto'}}>
-        <div className="reveal" style={{textAlign:'center', marginBottom:64}}>
-          <div style={{display:'inline-block',background:'rgba(79,70,229,.12)',border:'1px solid rgba(79,70,229,.3)',borderRadius:100,padding:'5px 14px',marginBottom:16}}>
-            <span style={{fontSize:12,color:'#818CF8',fontWeight:600,letterSpacing:'0.08em'}}>NEDEN PUSULA YKS</span>
-          </div>
-          <h2 style={{fontSize:'clamp(28px,3.5vw,44px)', fontWeight:900, letterSpacing:'-0.03em', marginBottom:16}}>
-            Sınavı Hacklemek İçin<br/>
-            <span className="gradient-text">Dört Silahın Var</span>
-          </h2>
-          <p style={{fontSize:16, color:'#64748B', maxWidth:500, margin:'0 auto'}}>Sıradan bir çalışma uygulaması değil. Senin için optimize eden bir sistemin var.</p>
-        </div>
-
-        <div className="features-grid" style={{display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:20}}>
-          {features.map((f,i) => (
-            <div key={i} className={`feature-card glass reveal scale d${i+1}`} style={{
-              borderRadius:16, padding:28,
-              border:`1px solid rgba(255,255,255,.07)`,
-              position:'relative', overflow:'hidden'
-            }}>
-              {/* Glow corner */}
-              <div style={{
-                position:'absolute',top:-40,right:-40,width:120,height:120,
-                background:f.color+'20',borderRadius:'50%',filter:'blur(30px)',pointerEvents:'none'
-              }}/>
-              <div style={{
-                width:54, height:54,
-                background:`${f.color}15`,
-                border:`1px solid ${f.color}40`,
-                borderRadius:14,
-                display:'flex', alignItems:'center', justifyContent:'center',
-                color:f.color, marginBottom:20
-              }}>
-                {f.icon}
-              </div>
-              <div style={{
-                display:'inline-block',
-                background:`${f.color}18`, border:`1px solid ${f.color}40`,
-                borderRadius:6, padding:'2px 8px', fontSize:10, fontWeight:700,
-                color:f.color, marginBottom:10, letterSpacing:'0.06em'
-              }}>{f.badge}</div>
-              <h3 style={{fontSize:19, fontWeight:800, marginBottom:10, letterSpacing:'-0.02em'}}>{f.title}</h3>
-              <p style={{fontSize:14, color:'#64748B', lineHeight:1.7, marginBottom:16}}>{f.desc}</p>
-              <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
-                {f.tags.map(t => (
-                  <span key={t} style={{
-                    background:'rgba(255,255,255,.05)', border:'1px solid rgba(255,255,255,.1)',
-                    borderRadius:6, padding:'3px 8px', fontSize:11, color:'#94A3B8'
-                  }}>{t}</span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── HOW IT WORKS ─── */
-function HowItWorks() {
-  const steps = [
-    {n:'01', icon:'🎯', title:'Seviyeni ve Hedefini Belirle', desc:'Mevcut net durumunu gir, hedef üniversiteni seç. AI motorun senin için kişisel bir yol haritası çizer.'},
-    {n:'02', icon:'🤖', title:'AI Koçunun Planına Uy', desc:'Her sabah sana özel günlük görevler. Yapay zeka, haftalık akışını ve odak bloklarını otomatik optimize eder.'},
-    {n:'03', icon:'📈', title:'Netlerinin Uçuşunu İzle', desc:'Gelişmiş skorboard, projeksiyon grafikler ve Ebbinghaus analizi ile her geçen gün hedefine ne kadar yaklaştığını gör.'},
-  ];
-
-  return (
-    <section id="nasıl-çalışır" style={{padding:'100px 24px', background:'linear-gradient(180deg, transparent 0%, rgba(15,23,42,.8) 50%, transparent 100%)'}}>
-      <div style={{maxWidth:1200, margin:'0 auto'}}>
-        <div className="reveal" style={{textAlign:'center', marginBottom:64}}>
-          <div style={{display:'inline-block',background:'rgba(34,197,94,.1)',border:'1px solid rgba(34,197,94,.3)',borderRadius:100,padding:'5px 14px',marginBottom:16}}>
-            <span style={{fontSize:12,color:'#22C55E',fontWeight:600,letterSpacing:'0.08em'}}>3 ADIMDA PUSULA YKS</span>
-          </div>
-          <h2 style={{fontSize:'clamp(28px,3.5vw,44px)', fontWeight:900, letterSpacing:'-0.03em'}}>
-            Nasıl Çalışır?
-          </h2>
-        </div>
-
-        <div className="how-it-works-grid" style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:0, position:'relative'}}>
-          {/* Connecting line */}
-          <div className="how-it-works-line" style={{position:'absolute', top:52, left:'17%', width:'66%', height:2, background:'linear-gradient(90deg, #4F46E5, #7C3AED, #4F46E5)', opacity:.3, zIndex:0}}/>
-
-          {steps.map((s,i) => (
-            <div key={i} className={`reveal d${i+1}`} style={{textAlign:'center', padding:'0 24px', position:'relative', zIndex:1}}>
-              <div style={{
-                width:68, height:68,
-                background: i===1 ? 'linear-gradient(135deg,#4F46E5,#7C3AED)' : 'rgba(79,70,229,.12)',
-                border:`2px solid ${i===1 ? 'transparent' : 'rgba(79,70,229,.3)'}`,
-                borderRadius:'50%',
-                display:'flex', alignItems:'center', justifyContent:'center',
-                margin:'0 auto 24px',
-                fontSize:28,
-                boxShadow: i===1 ? '0 0 30px rgba(79,70,229,.5)' : 'none'
-              }}>
-                {s.icon}
-              </div>
-              <div style={{fontSize:11,color:'#4F46E5',fontWeight:800,letterSpacing:'0.12em',marginBottom:8}}>ADIM {s.n}</div>
-              <h3 style={{fontSize:18, fontWeight:800, marginBottom:12, letterSpacing:'-0.02em'}}>{s.title}</h3>
-              <p style={{fontSize:14, color:'#64748B', lineHeight:1.7}}>{s.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── SOCIAL PROOF ─── */
-function SocialProof({ tweaks }) {
-  if (!tweaks.showTestimonials) return null;
-  const testimonials = [
-    {name:'Zeynep K.', school:'', score:'+42 Net', avatar:'#4F46E5', text:'"Geometri\'de neden takıldığımı ilk kez bir uygulama gösterdi. AI analizi gerçekten çalışıyor."'},
-    {name:'Ahmet D.', school:'', score:'+38 Net', avatar:'#7C3AED', text:'"Net projektör ile 2 ay öncesinden hedefime ulaşacağımı gördüm. O motivasyonla çalıştım."'},
-    {name:'Selin M.', school:'', score:'+55 Net', avatar:'#22C55E', text:'"Günlük planı takip etmek bu kadar kolay olmamıştı. Artık ne çalışacağımı düşünmüyorum."'},
-  ];
-
-  return (
-    <section style={{padding:'80px 24px'}}>
-      <div style={{maxWidth:1200, margin:'0 auto'}}>
-        <div className="reveal" style={{textAlign:'center', marginBottom:48}}>
-          <h2 style={{fontSize:'clamp(24px,3vw,38px)', fontWeight:900, letterSpacing:'-0.03em'}}>
-            Öğrenciler Ne Diyor?
-          </h2>
-          <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:4, marginTop:12}}>
-            {[1,2,3,4,5].map(i => <span key={i} style={{color:'#F59E0B', fontSize:18}}>★</span>)}
-            <span style={{fontSize:14, color:'#64748B', marginLeft:8}}>4.9 / 5.0 ortalama</span>
-          </div>
-        </div>
-        <div className="social-proof-grid" style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20}}>
-          {testimonials.map((t,i) => (
-            <div key={i} className={`testimonial-card glass reveal scale d${i+1}`} style={{
-              borderRadius:16, padding:24,
-              border:'1px solid rgba(255,255,255,.07)'
-            }}>
-              <p style={{fontSize:14, color:'#94A3B8', lineHeight:1.8, marginBottom:20, fontStyle:'italic'}}>{t.text}</p>
-              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-                <div style={{display:'flex', alignItems:'center', gap:10}}>
-                  <div style={{width:36,height:36,borderRadius:'50%',background:t.avatar,display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:700}}>
-                    {t.name[0]}
-                  </div>
-                  <div>
-                    <div style={{fontSize:13, fontWeight:700}}>{t.name}</div>
-                    <div style={{fontSize:11, color:'#64748B'}}>{t.school}</div>
-                  </div>
-                </div>
-                <div style={{background:'rgba(34,197,94,.15)',border:'1px solid rgba(34,197,94,.3)',borderRadius:8,padding:'4px 10px',fontSize:13,fontWeight:800,color:'#22C55E'}}>
-                  {t.score}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Trust badges */}
-        <div style={{display:'flex', justifyContent:'center', gap:32, marginTop:48, flexWrap:'wrap'}}>
-          {[
-            {icon:'⚡', label:'Kesintisiz Odaklanma'},
-            {icon:'🔒', label:'Sıfır Gecikme'},
-            {icon:'📱', label:'Mobil Uyumlu'},
-            {icon:'🇹🇷', label:'Türkçe Destek'},
-          ].map((b,i) => (
-            <div key={i} style={{display:'flex', alignItems:'center', gap:8}}>
-              <span style={{fontSize:20}}>{b.icon}</span>
-              <span style={{fontSize:13, color:'#64748B', fontWeight:500}}>{b.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── PRICING ─── */
-function Pricing() {
-  const starterFeatures = [
-    '3 gün boyunca tam yapay zeka erişimi',
-    'Başarı Simülatörü testi',
-    'Temel haftalık planlama',
-  ];
-  const proFeatures = [
-    'Sınava kadar Sınırsız AI Planlama',
-    'Optimum Rota (Zaman emici konuları ele)',
-    'Zaman/Bilgi Ayrımı Yapan Deneme Analizi',
-    'Savaş Öncesi İstihbarat & Odak Modu',
-    'Öncelikli teknik destek',
-  ];
-
-  return (
-    <section id="fiyatlandırma" style={{padding:'100px 24px', position:'relative', overflow:'hidden'}}>
-      {/* Ambient glow */}
-      <div style={{position:'absolute',top:'40%',left:'50%',transform:'translate(-50%,-50%)',width:700,height:400,background:'radial-gradient(ellipse, rgba(79,70,229,.08) 0%, transparent 70%)',pointerEvents:'none'}}/>
-
-      <div style={{maxWidth:900, margin:'0 auto', position:'relative', zIndex:1}}>
-        {/* Header */}
-        <div className="reveal" style={{textAlign:'center', marginBottom:56}}>
-          <div style={{display:'inline-block',background:'rgba(79,70,229,.12)',border:'1px solid rgba(79,70,229,.3)',borderRadius:100,padding:'5px 14px',marginBottom:16}}>
-            <span style={{fontSize:12,color:'#818CF8',fontWeight:600,letterSpacing:'0.08em'}}>FİYATLANDIRMA</span>
-          </div>
-          <h2 style={{fontSize:'clamp(26px,3.5vw,42px)', fontWeight:900, letterSpacing:'-0.03em', lineHeight:1.15, marginBottom:16}}>
-            Hedefine Ulaşmak İçin<br/>
-            <span className="gradient-text">Tek Bir Adım</span>
-          </h2>
-          <p style={{fontSize:15, color:'#64748B', maxWidth:560, margin:'0 auto', lineHeight:1.75}}>
-            Abonelik yok. <strong style={{color:'#E2E8F0'}}>Aylık taksit yok. Sürpriz ücret yok.</strong> YKS'ye kadar tek seferlik <strong style={{color:'#818CF8'}}>4.199 TL</strong> ile tüm yapay zeka gücünü serbest bırak.
-          </p>
-        </div>
-
-        {/* Cards */}
-        <div className="pricing-grid" style={{display:'grid', gridTemplateColumns:'1fr 1.08fr', gap:20, alignItems:'center'}}>
-
-          {/* Starter */}
-          <div className="glass feature-card reveal left" style={{
-            borderRadius:20, padding:'32px 28px',
-            border:'1px solid rgba(255,255,255,.08)',
-          }}>
-            <div style={{fontSize:12, color:'#64748B', fontWeight:700, letterSpacing:'0.1em', marginBottom:12}}>BAŞLANGIÇ</div>
-            <div style={{fontSize:22, fontWeight:800, letterSpacing:'-0.02em', marginBottom:20}}>3 Günlük Deneme</div>
-
-            <div style={{marginBottom:6}}>
-              <span style={{fontSize:48, fontWeight:900, letterSpacing:'-0.04em', color:'#E2E8F0'}}>0</span>
-              <span style={{fontSize:22, fontWeight:700, color:'#94A3B8', marginLeft:2}}>TL</span>
-            </div>
-            <div style={{fontSize:12, color:'#475569', marginBottom:28}}>Kredi kartı gerekmez.</div>
-
-            <div style={{borderTop:'1px solid rgba(255,255,255,.06)', paddingTop:24, marginBottom:28}}>
-              {starterFeatures.map((f,i) => (
-                <div key={i} style={{display:'flex', alignItems:'flex-start', gap:10, marginBottom:12}}>
-                  <div style={{width:18, height:18, borderRadius:'50%', border:'1.5px solid #475569', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1}}>
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5L4.2 7.2L8 3" stroke="#64748B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <span style={{fontSize:13, color:'#64748B', lineHeight:1.6}}>{f}</span>
-                </div>
-              ))}
-            </div>
-
-            <button style={{
-              width:'100%', padding:'13px', borderRadius:12,
-              background:'transparent',
-              border:'1.5px solid rgba(255,255,255,.18)',
-              color:'#94A3B8', fontFamily:'Inter,sans-serif',
-              fontSize:14, fontWeight:700, cursor:'pointer',
-              transition:'all .25s ease',
-              letterSpacing:'-0.01em'
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.35)'; e.currentTarget.style.color='#E2E8F0'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.18)'; e.currentTarget.style.color='#94A3B8'; }}
-            >
-              Ücretsiz Başla
-            </button>
-          </div>
-
-          {/* PRO */}
-          <div className="reveal right" style={{
-            borderRadius:22,
-            padding:'36px 32px',
-            background:'linear-gradient(145deg, rgba(79,70,229,.14) 0%, rgba(124,58,237,.1) 100%)',
-            border:'1.5px solid rgba(99,102,241,.45)',
-            boxShadow:'0 0 0 1px rgba(99,102,241,.15), 0 0 50px rgba(79,70,229,.18), inset 0 1px 0 rgba(255,255,255,.08)',
-            position:'relative', overflow:'hidden',
-            transition:'all .35s cubic-bezier(.25,.46,.45,.94)'
-          }}
-          onMouseEnter={e => { e.currentTarget.style.boxShadow='0 0 0 1px rgba(99,102,241,.3), 0 0 80px rgba(79,70,229,.3), inset 0 1px 0 rgba(255,255,255,.1)'; e.currentTarget.style.transform='translateY(-4px)'; }}
-          onMouseLeave={e => { e.currentTarget.style.boxShadow='0 0 0 1px rgba(99,102,241,.15), 0 0 50px rgba(79,70,229,.18), inset 0 1px 0 rgba(255,255,255,.08)'; e.currentTarget.style.transform='translateY(0)'; }}
-          >
-            {/* Shimmer top line */}
-            <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,transparent,#818CF8,#A78BFA,transparent)',opacity:.8}}/>
-            {/* Corner glow */}
-            <div style={{position:'absolute',top:-30,right:-30,width:160,height:160,background:'radial-gradient(circle,rgba(124,58,237,.25),transparent 70%)',pointerEvents:'none'}}/>
-
-            {/* Badge */}
-            <div style={{marginBottom:16}}>
-              <span style={{
-                display:'inline-flex', alignItems:'center', gap:5,
-                background:'linear-gradient(135deg,#4F46E5,#7C3AED)',
-                borderRadius:100, padding:'5px 14px',
-                fontSize:11, fontWeight:800, color:'white',
-                letterSpacing:'0.07em',
-                boxShadow:'0 4px 16px rgba(79,70,229,.4)'
-              }}>
-                <span style={{width:6,height:6,borderRadius:'50%',background:'#22C55E',display:'inline-block'}}/>
-                EN POPÜLER
-              </span>
-            </div>
-
-            <div style={{fontSize:12, color:'#818CF8', fontWeight:700, letterSpacing:'0.1em', marginBottom:10}}>PRO PAKET</div>
-            <div style={{fontSize:22, fontWeight:800, letterSpacing:'-0.02em', marginBottom:20, color:'#E2E8F0'}}>Pusula YKS PRO</div>
-
-            <div style={{display:'flex', alignItems:'center', gap:10, marginBottom:4}}>
-              <span style={{fontSize:18, fontWeight:700, color:'#64748B', textDecoration:'line-through', textDecorationColor:'rgba(148,163,184,.6)', textDecorationThickness:2}}>10.499 TL</span>
-              <span className="animate-pulse" style={{background:'rgba(16,185,129,.18)', border:'1px solid rgba(16,185,129,.45)', borderRadius:6, padding:'3px 8px', fontSize:10, fontWeight:900, color:'#34D399', letterSpacing:'0.08em'}}>%60 İNDİRİM</span>
-            </div>
-            <div style={{marginBottom:4, display:'flex', alignItems:'flex-end', gap:6}}>
-              <span style={{fontSize:60, fontWeight:900, letterSpacing:'-0.04em', lineHeight:1, background:'linear-gradient(135deg,#818CF8,#A78BFA)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text'}}>4.199</span>
-              <span style={{fontSize:22, fontWeight:700, color:'#818CF8', marginBottom:8}}>TL</span>
-            </div>
-            <div style={{fontSize:12, color:'#64748B', marginBottom:28}}>Tek Seferlik Ödeme · Sınava Kadar Erişim · Aylık Taksit Yok</div>
-
-            <div style={{borderTop:'1px solid rgba(99,102,241,.2)', paddingTop:24, marginBottom:28}}>
-              {proFeatures.map((f,i) => (
-                <div key={i} style={{display:'flex', alignItems:'flex-start', gap:10, marginBottom:13}}>
-                  <div style={{width:18, height:18, borderRadius:'50%', background:'linear-gradient(135deg,#4F46E5,#7C3AED)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1}}>
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5L4.2 7.2L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <span style={{fontSize:13, color:'#CBD5E1', lineHeight:1.6}}>{f}</span>
-                </div>
-              ))}
-            </div>
-
-            <a href="https://app.pusulayks.com/register" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none',display:'block'}}>
-            <button className="gradient-btn ring-4 ring-indigo-500/30 hover:ring-indigo-400/60 transition-all" style={{
-              width:'100%', padding:'15px', borderRadius:12,
-              border:'none', color:'white', fontFamily:'Inter,sans-serif',
-              fontSize:15, fontWeight:800, cursor:'pointer',
-              letterSpacing:'-0.01em', position:'relative', zIndex:1,
-              boxShadow:'0 8px 30px rgba(79,70,229,.45)',
-              animation:'pulse-glow 2s ease infinite'
-            }}>
-              🚀 %60 Erken Kayıt Fırsatını Yakala
-            </button>
-            </a>
-
-      
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── FINAL CTA ─── */
-function FinalCTA({ tweaks }) {
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  return (
-    <section style={{
-      padding:'100px 24px',
-      background:'linear-gradient(180deg, transparent, rgba(79,70,229,.08) 50%, transparent)',
-      position:'relative', overflow:'hidden'
-    }}>
-      <div style={{
-        position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)',
-        width:600, height:600,
-        background:'radial-gradient(circle, rgba(79,70,229,.1) 0%, transparent 70%)',
-        pointerEvents:'none'
-      }}/>
-      <div className="reveal" style={{maxWidth:680, margin:'0 auto', textAlign:'center', position:'relative', zIndex:1}}>
-        <div style={{fontSize:48, marginBottom:16}}>⏳</div>
-        <h2 style={{fontSize:'clamp(28px,4vw,48px)', fontWeight:900, letterSpacing:'-0.03em', lineHeight:1.15, marginBottom:20}}>
-          Bu 12 Saat Bitince Fiyat<br/>
-          <span className="gradient-text">10.499 TL'ye Çıkıyor.</span>
-        </h2>
-        <p style={{fontSize:16, color:'#94A3B8', lineHeight:1.75, marginBottom:40}}>
-          Şu an sayfada <strong style={{color:'#FCA5A5'}}>11 kişiyle birlikte</strong> bu kontenjana bakıyorsun. Karar verme hızın, 6 ay sonraki netini belirleyecek.
-        </p>
-
-        {submitted ? (
-          <div style={{
-            background:'rgba(34,197,94,.12)', border:'1px solid rgba(34,197,94,.4)',
-            borderRadius:16, padding:'24px 32px'
-          }}>
-            <div style={{fontSize:32, marginBottom:8}}>✅</div>
-            <div style={{fontSize:18, fontWeight:700, color:'#22C55E'}}>Listeye eklendin!</div>
-            <div style={{fontSize:14, color:'#64748B', marginTop:4}}>Erken erişim açıldığında seni ilk haberdar edeceğiz.</div>
-          </div>
-        ) : (
-          <div className="final-cta-form" style={{display:'flex', gap:10, maxWidth:440, margin:'0 auto'}}>
-            <input
-              type="email"
-              placeholder="E-posta adresin"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              style={{
-                flex:1, background:'rgba(255,255,255,.06)',
-                border:'1px solid rgba(255,255,255,.15)',
-                borderRadius:12, padding:'14px 18px',
-                color:'white', fontFamily:'Inter,sans-serif', fontSize:15,
-                outline:'none'
-              }}
-            />
-            <button
-              onClick={() => { if(email) { window.open('https://app.pusulayks.com/register','_blank'); setSubmitted(true); } }}
-              className="gradient-btn ring-2 ring-indigo-500/40 hover:ring-indigo-400/70 transition-all"
-              style={{
-                position:'relative', zIndex:1, flexShrink:0,
-                color:'white', border:'none', borderRadius:12, padding:'14px 24px',
-                fontFamily:'Inter,sans-serif', fontSize:15, fontWeight:800, cursor:'pointer',
-                whiteSpace:'nowrap',
-                animation:'pulse-glow 2s ease infinite'
-              }}
-            >
-              %60 Erken Kayıt Fırsatını Yakala
-            </button>
-          </div>
-        )}
-
-        <div style={{fontSize:12, color:'#475569', marginTop:16}}>
-          🔒 Güvenli ödeme · Tek seferlik 4.199 TL · Sınava kadar erişim
-        </div>
-
-        {/* Mobile App Coming Soon */}
-        <div style={{marginTop:48, display:'flex', flexDirection:'column', alignItems:'center', gap:16}}>
-          <div style={{position:'relative', display:'inline-block'}}>
-            <span style={{
-              display:'inline-flex', alignItems:'center', gap:5,
-              background:'rgba(79,70,229,.15)', border:'1px solid rgba(99,102,241,.5)',
-              borderRadius:100, padding:'4px 12px',
-              fontSize:10, fontWeight:800, color:'#818CF8',
-              letterSpacing:'0.1em',
-              boxShadow:'0 0 12px rgba(79,70,229,.3), 0 0 24px rgba(79,70,229,.15)',
-              animation:'pulse-glow 2s ease infinite'
-            }}>
-              <span style={{width:5,height:5,borderRadius:'50%',background:'#A78BFA',display:'inline-block'}}/>
-              ÇOK YAKINDA
-            </span>
-          </div>
-
-          <div style={{display:'flex', gap:12}}>
-            {/* App Store */}
-            <div style={{
-              opacity:.5,
-              background:'rgba(255,255,255,.04)',
-              backdropFilter:'blur(12px)',
-              border:'1px solid rgba(255,255,255,.1)',
-              borderRadius:12, padding:'10px 18px',
-              display:'flex', alignItems:'center', gap:10,
-              cursor:'default', userSelect:'none'
-            }}>
-              <svg width="20" height="24" viewBox="0 0 20 24" fill="#E2E8F0">
-                <path d="M14.94 5.19A4.38 4.38 0 0 0 16 2a4.44 4.44 0 0 0-3 1.52 4.17 4.17 0 0 0-1 3.09 3.69 3.69 0 0 0 2.94-1.42zm2.52 7.44a4.51 4.51 0 0 1 2.16-3.81 4.66 4.66 0 0 0-3.66-2c-1.56-.16-3 .91-3.83.91-.83 0-2-.89-3.3-.87A4.92 4.92 0 0 0 4.69 9.4C2.93 12.45 4.24 17 6 19.47c.8 1.21 1.8 2.59 3.12 2.54 1.23-.05 1.72-.81 3.22-.81 1.5 0 1.9.81 3.22.79 1.32-.02 2.22-1.24 3.06-2.45a11 11 0 0 0 1.38-2.85 4.41 4.41 0 0 1-2.54-4.06z"/>
-              </svg>
-              <div style={{textAlign:'left'}}>
-                <div style={{fontSize:9, color:'#94A3B8', fontWeight:500, letterSpacing:'0.05em'}}>DOWNLOAD ON THE</div>
-                <div style={{fontSize:14, color:'#E2E8F0', fontWeight:700, lineHeight:1.2}}>App Store</div>
-              </div>
-            </div>
-
-            {/* Google Play */}
-            <div style={{
-              opacity:.5,
-              background:'rgba(255,255,255,.04)',
-              backdropFilter:'blur(12px)',
-              border:'1px solid rgba(255,255,255,.1)',
-              borderRadius:12, padding:'10px 18px',
-              display:'flex', alignItems:'center', gap:10,
-              cursor:'default', userSelect:'none'
-            }}>
-              <svg width="21" height="24" viewBox="0 0 21 24" fill="none">
-                <path d="M1.22.84 12.2 12 1.22 23.16A2 2 0 0 1 0 21.38V2.62A2 2 0 0 1 1.22.84z" fill="#EA4335"/>
-                <path d="M17.56 9.86 14.4 12l3.16 2.14 2.94-1.7a1 1 0 0 0 0-1.88l-2.94-1.7z" fill="#FBBC04"/>
-                <path d="M12.2 12 1.22.84l13.18 7.58L12.2 12z" fill="#4285F4"/>
-                <path d="M12.2 12l2.2 2.58L1.22 23.16 12.2 12z" fill="#34A853"/>
-              </svg>
-              <div style={{textAlign:'left'}}>
-                <div style={{fontSize:9, color:'#94A3B8', fontWeight:500, letterSpacing:'0.05em'}}>GET IT ON</div>
-                <div style={{fontSize:14, color:'#E2E8F0', fontWeight:700, lineHeight:1.2}}>Google Play</div>
-              </div>
-            </div>
-          </div>
-
-          <p style={{fontSize:12, color:'#334155', letterSpacing:'0.02em', fontWeight:400}}>
-            Pusula YKS tüm gücüyle çok yakında telefon ve tabletinizde.
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── FOOTER ─── */
-function AccountDeletionPage() {
-  const [email, setEmail] = useState('');
-  const [confirmed, setConfirmed] = useState(false);
-  const [requested, setRequested] = useState(false);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const previousTitle = document.title;
-    document.title = 'Hesap ve Veri Silme — Pusula YKS';
-    return () => { document.title = previousTitle; };
-  }, []);
-
-  const submitRequest = (event) => {
-    event.preventDefault();
-    const normalizedEmail = email.trim();
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      setError('Lütfen Pusula hesabında kullandığın geçerli e-posta adresini yaz.');
-      return;
-    }
-    if (!confirmed) {
-      setError('Hesabın ve ilişkili verilerin silinmesini istediğini onaylamalısın.');
-      return;
-    }
-
-    setError('');
-    const subject = encodeURIComponent('Pusula YKS hesap ve veri silme talebi');
-    const body = encodeURIComponent([
-      'Merhaba,',
-      '',
-      'Pusula YKS hesabımın ve hesabımla ilişkili kişisel verilerin silinmesini talep ediyorum.',
-      `Pusula hesabı e-posta adresim: ${normalizedEmail}`,
-      '',
-      'Bu talebin hesabımın doğrulanmasından sonra işleme alınmasını rica ederim.',
-      '',
-      'Teşekkürler.'
-    ].join('\n'));
-
-    window.location.href = `mailto:destek@pusulayks.com?subject=${subject}&body=${body}`;
-    setRequested(true);
-  };
-
-  return (
-    <div style={{minHeight:'100vh', background:'#0B1120', color:'#E2E8F0', fontFamily:'Inter, sans-serif'}}>
-      <header style={{borderBottom:'1px solid rgba(255,255,255,.08)', background:'rgba(11,17,32,.86)', backdropFilter:'blur(18px)'}}>
-        <div style={{maxWidth:1120, margin:'0 auto', padding:'22px 24px', display:'flex', justifyContent:'space-between', alignItems:'center', gap:20}}>
-          <a href="/" style={{display:'flex', alignItems:'center', gap:10, color:'#E2E8F0', textDecoration:'none'}}>
-            <img src="./favicon.png" alt="Pusula YKS" style={{width:38, height:38, objectFit:'contain'}} />
-            <span style={{fontSize:18, fontWeight:800, letterSpacing:'-0.03em'}}>Pusula <span style={{color:'#818CF8'}}>YKS</span></span>
-          </a>
-          <a href="https://app.pusulayks.com/legal/gizlilik" target="_blank" rel="noopener noreferrer" style={{color:'#94A3B8', fontSize:13, textDecoration:'none'}}>
-            Gizlilik politikası
-          </a>
-        </div>
-      </header>
-
-      <main style={{maxWidth:920, margin:'0 auto', padding:'72px 24px 96px'}}>
-        <div style={{maxWidth:700, margin:'0 auto'}}>
-          <div style={{display:'inline-flex', alignItems:'center', gap:8, padding:'7px 12px', borderRadius:999, border:'1px solid rgba(129,140,248,.35)', background:'rgba(79,70,229,.12)', color:'#A5B4FC', fontSize:11, fontWeight:800, letterSpacing:'.1em'}}>
-            HESAP VE VERİ SİLME
-          </div>
-
-          <h1 style={{margin:'22px 0 16px', fontSize:'clamp(34px,6vw,58px)', lineHeight:1.06, letterSpacing:'-0.05em', fontWeight:900}}>
-            Pusula YKS hesabını silmek mi istiyorsun?
-          </h1>
-          <p style={{fontSize:17, lineHeight:1.75, color:'#94A3B8', maxWidth:680}}>
-            Hesabının ve hesabınla ilişkili kişisel verilerin silinmesi için aşağıdaki formdan talep oluşturabilirsin. Talebin, hesabın doğrulandıktan sonra işleme alınır.
-          </p>
-
-          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:14, margin:'34px 0'}}>
-            {[
-              ['01', 'E-posta adresini yaz', 'Pusula hesabında kullandığın adresi gir.'],
-              ['02', 'Talebi gönder', 'E-posta uygulaman açılacak; talebi gönder.'],
-              ['03', 'Doğrulama ve silme', 'Hesabın doğrulandıktan sonra verilerin silinir.']
-            ].map(([number, title, description]) => (
-              <div key={number} style={{padding:18, borderRadius:16, background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.08)'}}>
-                <div style={{color:'#818CF8', fontSize:12, fontWeight:900, letterSpacing:'.1em', marginBottom:10}}>{number}</div>
-                <div style={{fontSize:15, fontWeight:800, marginBottom:6}}>{title}</div>
-                <div style={{fontSize:13, lineHeight:1.6, color:'#64748B'}}>{description}</div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{padding:24, borderRadius:22, background:'linear-gradient(145deg,rgba(79,70,229,.13),rgba(124,58,237,.08))', border:'1px solid rgba(129,140,248,.28)', boxShadow:'0 24px 70px rgba(0,0,0,.2)'}}>
-            {requested ? (
-              <div style={{padding:'16px 4px'}}>
-                <div style={{fontSize:32, marginBottom:12}}>✉️</div>
-                <h2 style={{fontSize:24, marginBottom:10}}>E-posta taslağın hazırlandı.</h2>
-                <p style={{color:'#94A3B8', lineHeight:1.7, marginBottom:16}}>
-                  E-posta uygulaman açılmadıysa talebini doğrudan şu adrese gönder:
-                </p>
-                <a href="mailto:destek@pusulayks.com" style={{color:'#A5B4FC', fontWeight:800}}>destek@pusulayks.com</a>
-              </div>
-            ) : (
-              <form onSubmit={submitRequest}>
-                <label htmlFor="deletion-email" style={{display:'block', fontSize:13, fontWeight:700, color:'#CBD5E1', marginBottom:8}}>
-                  Pusula hesabındaki e-posta adresin
-                </label>
-                <input
-                  id="deletion-email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={event => { setEmail(event.target.value); setError(''); }}
-                  placeholder="ornek@email.com"
-                  style={{width:'100%', padding:'15px 16px', borderRadius:12, border:'1px solid rgba(255,255,255,.14)', background:'rgba(15,23,42,.72)', color:'#F8FAFC', fontFamily:'Inter,sans-serif', fontSize:15, outline:'none'}}
-                />
-
-                <label style={{display:'flex', alignItems:'flex-start', gap:10, marginTop:18, color:'#94A3B8', fontSize:13, lineHeight:1.55, cursor:'pointer'}}>
-                  <input type="checkbox" checked={confirmed} onChange={event => { setConfirmed(event.target.checked); setError(''); }} style={{marginTop:3, accentColor:'#6366F1'}} />
-                  <span>Hesabımın, profil bilgilerimin ve hesabımla ilişkili verilerin kalıcı olarak silinmesini talep ettiğimi onaylıyorum.</span>
-                </label>
-
-                {error && <div role="alert" style={{marginTop:16, padding:'11px 13px', borderRadius:10, background:'rgba(244,63,94,.12)', border:'1px solid rgba(244,63,94,.3)', color:'#FDA4AF', fontSize:13}}>{error}</div>}
-
-                <button type="submit" className="gradient-btn" style={{width:'100%', marginTop:22, padding:'15px 18px', border:0, borderRadius:12, color:'white', fontFamily:'Inter,sans-serif', fontSize:15, fontWeight:800, cursor:'pointer', position:'relative', zIndex:1}}>
-                  Hesap silme talebi oluştur
-                </button>
-              </form>
-            )}
-          </div>
-
-          <div style={{marginTop:26, padding:18, borderRadius:16, background:'rgba(245,158,11,.08)', border:'1px solid rgba(245,158,11,.2)', color:'#CBD5E1', fontSize:13, lineHeight:1.7}}>
-            <strong style={{color:'#FBBF24'}}>Bilgi:</strong> Hesap silme işlemi geri alınamaz. Yasal yükümlülükler nedeniyle tutulması gereken kayıtlar varsa, bunlar gizlilik politikasında belirtilen süreler boyunca saklanabilir.
-          </div>
-        </div>
-      </main>
-
-      <footer style={{borderTop:'1px solid rgba(255,255,255,.08)', padding:'28px 24px', color:'#475569', fontSize:12}}>
-        <div style={{maxWidth:920, margin:'0 auto', display:'flex', justifyContent:'space-between', gap:16, flexWrap:'wrap'}}>
-          <span>© 2026 Pusula YKS</span>
-          <span>Hesap silme talepleri: <a href="mailto:destek@pusulayks.com" style={{color:'#818CF8'}}>destek@pusulayks.com</a></span>
-        </div>
-      </footer>
+      <p class="legal-line">Fiyatlara KDV dahildir. <a href="https://app.pusulayks.com/legal/mesafeli-satis">Mesafeli Satış Sözleşmesi</a> · <a href="https://app.pusulayks.com/legal/iade">İade ve Cayma Politikası</a> · <a href="https://app.pusulayks.com/legal/kullanim-kosullari">Kullanım Koşulları</a></p>
     </div>
-  );
-}
+  </section>
 
-function Footer() {
-  return (
-    <footer style={{borderTop:'1px solid rgba(255,255,255,.07)', padding:'40px 24px'}}>
-      <div className="footer-container" style={{maxWidth:1200, margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:20}}>
-        <div style={{display:'flex',alignItems:'center',gap:8}}>
-          <img src="./favicon.png" alt="Pusula YKS" style={{height:40, width:'auto', objectFit:'contain'}} />
-          <span style={{fontWeight:800, fontSize:16, letterSpacing:'-0.02em'}}>Pusula <span style={{color:'#818CF8'}}>YKS</span></span>
+  <!-- ============ ANDROID ============ -->
+  <section class="section" id="android" aria-labelledby="android-baslik" style="padding-block:clamp(56px,7vw,88px) 0">
+    <div class="wrap">
+      <div class="android-card reveal">
+        <div class="android-card__icon" aria-hidden="true"><svg><use href="#i-phone"/></svg></div>
+        <div>
+          <h2 id="android-baslik">Android'de misin?</h2>
+          <p>Google Play sürümü yakında. O zamana kadar Pusula'yı tarayıcıdan, <strong>app.pusulayks.com</strong> adresinden kullanabilirsin. Android uygulaması geldiğinde aynı hesapla girersin; planın ve ilerlemen yerinde olur.</p>
+          <p class="note">Web'de ücretsiz deneme yok; her hesaba bir ücretsiz plan üretimi tanımlı. Pusula Pro şimdilik yalnız iPhone ve iPad uygulamasından alınabiliyor.</p>
         </div>
-        <div style={{fontSize:13, color:'#475569'}}>© 2026 Pusula YKS. Tüm hakları saklıdır.</div>
-        <div style={{display:'flex',gap:24}}>
-          {['Gizlilik','Kullanım Koşulları','İletişim'].map(l => (
-            <a key={l} href="#" style={{fontSize:13, color:'#475569', textDecoration:'none', transition:'color .2s'}}
-               onMouseEnter={e => e.target.style.color='#818CF8'}
-               onMouseLeave={e => e.target.style.color='#475569'}>{l}</a>
-          ))}
-          <a href="/hesap-silme" style={{fontSize:13, color:'#475569', textDecoration:'none', transition:'color .2s'}}
-             onMouseEnter={e => e.target.style.color='#818CF8'}
-             onMouseLeave={e => e.target.style.color='#475569'}>Hesap Silme</a>
+        <div class="android-card__actions">
+          <a class="btn btn--accent" href="https://app.pusulayks.com/register">Web'de ücretsiz başla</a>
+          <a class="btn" href="https://app.pusulayks.com"><svg width="18" height="18" aria-hidden="true"><use href="#i-globe"/></svg>Hesabın varsa giriş yap</a>
         </div>
       </div>
-    </footer>
-  );
-}
-
-/* ─── TWEAKS PANEL ─── */
-function TweaksPanel({ tweaks, setTweaks, visible }) {
-  if (!visible) return null;
-  return (
-    <div style={{
-      position:'fixed', bottom:24, right:24, zIndex:999,
-      background:'rgba(15,23,42,.95)', backdropFilter:'blur(20px)',
-      border:'1px solid rgba(79,70,229,.4)', borderRadius:16,
-      padding:20, width:260,
-      boxShadow:'0 20px 60px rgba(0,0,0,.6)'
-    }}>
-      <div style={{fontSize:13,fontWeight:700,color:'#818CF8',marginBottom:16,letterSpacing:'0.06em'}}>TWEAKS</div>
-      
-      <label style={{fontSize:12,color:'#64748B',display:'block',marginBottom:6}}>Buton Metni</label>
-      <input value={tweaks.ctaText} onChange={e => setTweaks({...tweaks,ctaText:e.target.value})}
-        style={{width:'100%',background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:8,padding:'7px 10px',color:'white',fontFamily:'Inter,sans-serif',fontSize:12,outline:'none',marginBottom:14}}/>
-
-      <label style={{fontSize:12,color:'#64748B',display:'block',marginBottom:6}}>FOMO Banner Metni</label>
-      <input value={tweaks.fomoText || ''} onChange={e => setTweaks({...tweaks,fomoText:e.target.value})}
-        style={{width:'100%',background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:8,padding:'7px 10px',color:'white',fontFamily:'Inter,sans-serif',fontSize:12,outline:'none',marginBottom:14}}/>
-
-      <label style={{fontSize:12,color:'#64748B',display:'block',marginBottom:6}}>Kalan Kontenjan</label>
-      <input type="number" min="1" value={tweaks.kontenjan ?? 11} onChange={e => setTweaks({...tweaks,kontenjan: parseInt(e.target.value||'0',10)})}
-        style={{width:'100%',background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:8,padding:'7px 10px',color:'white',fontFamily:'Inter,sans-serif',fontSize:12,outline:'none',marginBottom:14}}/>
-
-      <label style={{fontSize:12,color:'#64748B',display:'block',marginBottom:6}}>Ana Renk</label>
-      <div style={{display:'flex',gap:8,marginBottom:14}}>
-        {['#4F46E5','#7C3AED','#0EA5E9','#10B981','#F59E0B'].map(c => (
-          <div key={c} onClick={() => setTweaks({...tweaks,accentColor:c})}
-            style={{width:24,height:24,borderRadius:'50%',background:c,cursor:'pointer',
-              border: tweaks.accentColor===c ? '2px solid white' : '2px solid transparent'}}/>
-        ))}
-      </div>
-
-      <label style={{fontSize:12,color:'#64748B',display:'flex',alignItems:'center',gap:8,cursor:'pointer'}}>
-        <input type="checkbox" checked={tweaks.showTestimonials} onChange={e => setTweaks({...tweaks,showTestimonials:e.target.checked})} style={{accentColor:'#4F46E5'}}/>
-        Yorumları Göster
-      </label>
     </div>
-  );
-}
+  </section>
 
-/* ─── SCROLL REVEAL HOOK ─── */
-function useReveal() {
-  useEffect(() => {
-    const els = document.querySelectorAll('.reveal');
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
-    }, { threshold: 0.12 });
-    els.forEach(el => io.observe(el));
-    return () => io.disconnect();
-  }, []);
-}
+  <!-- ============ SSS ============ -->
+  <section class="section" id="sss" aria-labelledby="sss-baslik">
+    <div class="wrap">
+      <div class="section-head section-head--center reveal">
+        <span class="eyebrow">SSS</span>
+        <h2 id="sss-baslik">Aklına takılanlar</h2>
+      </div>
 
-/* ─── APP ─── */
-function App() {
-  const [tweaks, setTweaks] = useState(TWEAK_DEFAULTS);
-  const [tweaksVisible, setTweaksVisible] = useState(false);
-  useReveal();
+      <div class="faq">
+        <details class="trial">
+          <summary>7 günlük ücretsiz deneme nasıl işler?</summary>
+          <div class="faq__body">
+            <p>Uygulamayı indirip Pro planlarından birini seçtiğinde, yeni üyeysen ilk 7 gün ücretsizdir. Deneme boyunca Pro'nun tamamı açıktır, hiçbir özellik kısıtlı değildir. Deneme bitiminden en az 24 saat önce iptal edersen ücret alınmaz; etmezsen seçtiğin plan otomatik yenilenir.</p>
+            <p>Deneme üç plana da uygulanır; yalnızca yeni üyeler için ve yalnızca uygulamada geçerlidir. Web'de ücretsiz deneme yoktur.</p>
+          </div>
+        </details>
 
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.data?.type === '__activate_edit_mode') setTweaksVisible(true);
-      if (e.data?.type === '__deactivate_edit_mode') setTweaksVisible(false);
-    };
-    window.addEventListener('message', handler);
-    window.parent.postMessage({type:'__edit_mode_available'}, '*');
-    return () => window.removeEventListener('message', handler);
-  }, []);
+        <details>
+          <summary>Pro almadan neleri kullanabilirim?</summary>
+          <div class="faq__body">
+            <p>Hesap başına bir plan üretimi, içinde bulunduğun dönemin yol haritası, günlük saatli program, konu takibi, deneme girişi, odak seansı, Günü Kapat / Planı Toparla / Günü Optimize Et ve günlük brifingin kural tabanlı içgörüleri ücretsizdir.</p>
+            <p>Sınava kadarki tüm dönemler, sınırsız plan yenileme, rutinler, hafta sonu denemesi, Optimum Rota, haftalık koç raporu, deneme analizi ve günde 20 AI işlemi Pro'dadır.</p>
+          </div>
+        </details>
 
-  useEffect(() => {
-    if (tweaksVisible) {
-      window.parent.postMessage({type:'__edit_mode_set_keys', edits: tweaks}, '*');
-      const root = document.documentElement;
-      root.style.setProperty('--accent', tweaks.accentColor);
-    }
-  }, [tweaks, tweaksVisible]);
+        <details>
+          <summary>Pusula Koç ne yapar?</summary>
+          <div class="faq__body">
+            <p>Her sabah günün odağını yazar. Pro üyelikte her hafta gidişatını raporlar, planın o haftaki sırasını gerekçelendirir ve girdiğin denemeyi yorumlar. Uygulamada mesajlaşma yok; koç sana kendisi anlatır.</p>
+            <p>Pro üyelikte günde 20 AI işlemi hakkın olur; o günkü hakkını Ayarlar → Üyelik bölümünde görürsün. Yapay zekâyı istersen Ayarlar'dan tamamen kapatabilirsin.</p>
+          </div>
+        </details>
 
-  if (/^\/hesap-silme\/?$/.test(window.location.pathname)) {
-    return <AccountDeletionPage />;
-  }
+        <details>
+          <summary>Planım sınava yetişmezse ne olur?</summary>
+          <div class="faq__body">
+            <p>Pusula bunu önceden söyler ve üç çıkış yolu sunar: otomatik ele, elle seç, hedefi yükselt. Pro'daki Optimum Rota, süre yetmediğinde düşük getirili konuları eler ve kalan zamanı en çok net getirecek konulara verir.</p>
+          </div>
+        </details>
 
-  return (
-    <>
-      <FomoBanner tweaks={tweaks} />
-      <Navbar tweaks={tweaks} />
-      <Hero tweaks={tweaks} />
-      <PriceComparison />
-      <Features />
-      <HowItWorks />
-      <SocialProof tweaks={tweaks} />
-      <Pricing />
-      <FinalCTA tweaks={tweaks} />
-      <Footer />
-      <TweaksPanel tweaks={tweaks} setTweaks={setTweaks} visible={tweaksVisible} />
-    </>
-  );
-}
+        <details>
+          <summary>Bir günü kaçırırsam plan bozulur mu?</summary>
+          <div class="faq__body">
+            <p>Hayır. Planı Toparla geciken işleri boş günlere dağıtır ve seansların sırasını korur. Yalnız bugün kaydıysa Günü Optimize Et hiçbir şeyi başka güne taşımadan günü şu andan itibaren yeniden dizer. Tatil ya da hastalık için Planı Dondur var; çalışma serin ve ilerlemen korunur.</p>
+          </div>
+        </details>
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-</script>
+        <details>
+          <summary>Alanımı, hedefimi ya da çalışma saatlerimi sonradan değiştirebilir miyim?</summary>
+          <div class="faq__body">
+            <p>Evet, hepsini Ayarlar'dan değiştirebilirsin. Değişiklik yol haritasını yeniden düzenler; işaretlediğin konular ve ilerlemen silinmez.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Android'de var mı? Web'den kullanabilir miyim?</summary>
+          <div class="faq__body">
+            <p>Pusula YKS şu an iPhone ve iPad için App Store'da. Google Play sürümü yakında.</p>
+            <p>Web uygulaması <a href="https://app.pusulayks.com">app.pusulayks.com</a> adresinde: aynı hesap, aynı veri. Telefonda işaretlediğin konu web'de de görünür. Web'de ücretsiz deneme yok; her hesaba bir ücretsiz plan üretimi tanımlı. Pusula Pro şimdilik yalnız uygulamadan alınabiliyor.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Aboneliğimi nasıl iptal ederim?</summary>
+          <div class="faq__body">
+            <p>Uygulama seni App Store'daki abonelik sayfana götürür; iptali oradan yaparsın. iPhone'da Ayarlar'da adına dokunup Abonelikler'e girerek de aynı sayfaya ulaşabilirsin. Mevcut dönem bitmeden en az 24 saat önce iptal etmezsen abonelik yenilenir.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>İade alabilir miyim?</summary>
+          <div class="faq__body">
+            <p>Pusula Pro'yu App Store'dan aldıysan ödemeyi Apple tahsil eder: iade talebini <a href="https://reportaproblem.apple.com" rel="nofollow">reportaproblem.apple.com</a> üzerinden Apple'a iletirsin, Apple kendi koşullarına göre değerlendirir.</p>
+            <p>Pusula dijital bir hizmettir; erişimin satın aldığın anda açılır. Bu nedenle bizim tarafımızdan iade yalnızca üç durumda yapılır: aynı ödemenin iki kez çekilmesi, ödeme alınıp erişimin açılmaması ya da hatalı tutar çekilmesi. Ödemen alındığı hâlde Pro erişimin açılmadıysa <a href="mailto:destek@pusulayks.com">destek@pusulayks.com</a> adresine yaz.</p>
+            <p><span class="trial">Ücret ödemeden başlamak istersen 7 günlük deneme var: deneme bitiminden en az 24 saat önce iptal edersen ücret alınmaz. </span>Ayrıntılar <a href="https://app.pusulayks.com/legal/iade">İade ve Cayma Politikası</a>'nda.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Verilerim güvende mi? Hesabımı nasıl silerim?</summary>
+          <div class="faq__body">
+            <p>Verilerin <a href="https://app.pusulayks.com/legal/gizlilik">Gizlilik Politikası ve KVKK</a> metninde anlatıldığı şekilde işlenir. Hesabını uygulamada Ayarlar → Daha Fazla bölümünden silebilir ya da <a href="/hesap-silme">hesap silme sayfasından</a> talep oluşturabilirsin.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SON ÇAĞRI ============ -->
+  <section class="section dark final" aria-labelledby="final-baslik">
+    <svg class="compass-ring" aria-hidden="true"><use href="#i-compass"/></svg>
+    <div class="wrap reveal">
+      <img class="final__icon" src="/assets/img/icon-192.png" width="76" height="76" alt="">
+      <h2 id="final-baslik">Sınava giden rota, <em>masanda kalsın.</em></h2>
+      <p class="lead">Uygulamayı indir, ilk planını birkaç dakikada kur. Gerisini her sabah Pusula dizer.</p>
+
+      <div class="final__cta hide-android">
+        <a class="store-btn store-btn--light" href="https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr">
+          <svg aria-hidden="true"><use href="#i-apple"/></svg>
+          <span class="store-btn__text"><span class="store-btn__small">iPhone ve iPad için</span><span class="store-btn__big">App Store'dan İndir</span></span>
+        </a>
+        <div class="qr-card hide-mobile-os">
+          <img src="/assets/img/qr-indir.svg" width="58" height="58" alt="Pusula YKS'yi App Store'dan indirmek için QR kod" loading="lazy">
+          <span><strong>Telefonuna indir</strong>Kamerayı QR koda tut</span>
+        </div>
+      </div>
+      <p class="final__fine trial hide-android">7 gün dene. Deneme bitiminden en az 24 saat önce iptal edersen ücret yok.</p>
+
+      <div class="final__cta only-android">
+        <a class="btn btn--accent" href="https://app.pusulayks.com/register">Web'de ücretsiz başla</a>
+      </div>
+      <p class="final__android only-android">Google Play sürümü yakında.</p>
+      <p class="final__android hide-ios hide-android">Android'de misin? <a href="#android">Google Play sürümü yakında; şimdilik web'den başla.</a></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="Pusula YKS ana sayfa">
+          <img src="/assets/img/icon-96.png" width="34" height="34" alt="">
+          <span class="brand__name">Pusula<span>YKS</span></span>
+        </a>
+        <p>YKS müfredatının 320 konusunu senin gününe, netlerine ve hedef sıralamana göre sıraya dizen çalışma planı.</p>
+        <a class="store-btn store-btn--sm hide-android" href="https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr">
+          <svg aria-hidden="true"><use href="#i-apple"/></svg>
+          <span class="store-btn__text"><span class="store-btn__big">App Store'dan indir</span></span>
+        </a>
+      </div>
+
+      <nav aria-labelledby="f-urun">
+        <h2 id="f-urun">Ürün</h2>
+        <ul>
+          <li><a href="#nasil">Nasıl çalışır</a></li>
+          <li><a href="#ekranlar">Ekranlar</a></li>
+          <li><a href="#plan-motoru">Plan motoru</a></li>
+          <li><a href="#koc">Pusula Koç</a></li>
+          <li><a href="#fiyatlar">Fiyatlar</a></li>
+          <li><a href="#sss">SSS</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="f-destek">
+        <h2 id="f-destek">Uygulama ve destek</h2>
+        <ul>
+          <li><a href="https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr">App Store'da Pusula YKS</a></li>
+          <li><a href="https://app.pusulayks.com">Web uygulaması</a></li>
+          <li><a href="#android">Android</a></li>
+          <li><a href="mailto:destek@pusulayks.com">destek@pusulayks.com</a></li>
+          <li><a href="/hesap-silme">Hesap silme</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="f-yasal">
+        <h2 id="f-yasal">Yasal</h2>
+        <ul>
+          <li><a href="https://app.pusulayks.com/legal/gizlilik">Gizlilik Politikası ve KVKK</a></li>
+          <li><a href="https://app.pusulayks.com/legal/kullanim-kosullari">Kullanım Koşulları</a></li>
+          <li><a href="https://app.pusulayks.com/legal/mesafeli-satis">Mesafeli Satış Sözleşmesi</a></li>
+          <li><a href="https://app.pusulayks.com/legal/iade">İade ve Cayma Politikası</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-legal">
+      <p>Satıcı: Mehmet Şeker (şahıs işletmesi) · Beykent Mah. 85112 Sk. No: 7/12, Şehitkamil/Gaziantep · Şehitkamil VD · VKN 10121307230</p>
+      <p>İletişim: <a href="mailto:destek@pusulayks.com">destek@pusulayks.com</a> · <a href="tel:+905011476527">+90 501 147 65 27</a></p>
+      <p>© <span data-year>2026</span> Pusula YKS. Apple, iPhone ve iPad, Apple Inc.'in ABD'de ve diğer ülkelerde tescilli ticari markalarıdır. App Store, Apple Inc.'in hizmet markasıdır.</p>
+    </div>
+  </div>
+</footer>
+
+<div class="sticky-cta" id="sticky-cta">
+  <img src="/assets/img/icon-96.png" width="40" height="40" alt="">
+  <div class="sticky-cta__text">
+    <b>Pusula YKS</b>
+    <span class="hide-android">iPhone ve iPad<span class="trial"> · 7 gün ücretsiz</span></span>
+    <span class="only-android">Android yakında</span>
+  </div>
+  <a class="btn hide-android" href="https://apps.apple.com/tr/app/pusula-yks/id6805790495?l=tr">İndir</a>
+  <a class="btn only-android" href="https://app.pusulayks.com/register">Web'de başla</a>
+</div>
+
 </body>
 </html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="tr" data-platform="desktop">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hesap ve Veri Silme — Pusula YKS</title>
+<meta name="description" content="Pusula YKS hesabını ve hesabınla ilişkili kişisel verileri silme yolları: uygulama içinden ya da bu sayfadan talep oluşturarak.">
+<link rel="canonical" href="https://www.pusulayks.com/hesap-silme">
+<meta name="theme-color" content="#F6F7FB">
+
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<script>
+  (function () {
+    var d = document.documentElement, ua = navigator.userAgent || "";
+    var android = /Android/i.test(ua);
+    var ios = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    d.setAttribute("data-platform", android ? "android" : ios ? "ios" : "desktop");
+  })();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400..700&display=swap">
+<link rel="stylesheet" href="/assets/css/site.css">
+<script src="/assets/js/site.js" defer></script>
+</head>
+<body>
+
+<a class="skip-link" href="#icerik">İçeriğe geç</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Pusula YKS ana sayfa">
+      <img src="/assets/img/icon-96.png" width="34" height="34" alt="">
+      <span class="brand__name">Pusula<span>YKS</span></span>
+    </a>
+    <a class="btn btn--ghost" href="/"><span aria-hidden="true">←</span> Ana sayfa</a>
+  </div>
+</header>
+
+<main id="icerik" class="page-main">
+  <div class="wrap narrow">
+    <span class="eyebrow">Hesap ve veri silme</span>
+    <h1 class="page-title">Pusula YKS hesabını silmek mi istiyorsun?</h1>
+    <p class="lead">Hesabını ve hesabınla ilişkili kişisel verilerini iki yoldan silebilirsin. Bu sayfadan oluşturduğun talep, hesabın doğrulandıktan sonra işleme alınır.</p>
+    <div class="scope">
+      <p><strong>Silinenler:</strong> adın ve e-posta adresin, tanışma sihirbazındaki cevapların ve hedeflerin, çalışma planın ve yol haritan, konu ilerlemen, deneme kayıtların, koç raporların ve uygulama kullanım kayıtların.</p>
+      <p><strong>Saklananlar:</strong> yasal yükümlülük gereği tutulması gereken ödeme ve işlem kayıtları, ilgili mevzuatın öngördüğü süre boyunca.</p>
+      <p>Talebin, doğrulamanın ardından en geç 30 gün içinde sonuçlandırılır.</p>
+    </div>
+
+    <div class="options">
+      <section class="option" aria-labelledby="yol-uygulama">
+        <span class="onboard__time">Yol 1</span>
+        <h2 id="yol-uygulama">Uygulamadan sil</h2>
+        <p>Pusula YKS uygulamasında <strong>Ayarlar → Daha Fazla</strong> bölümünden hesabını silebilirsin.</p>
+      </section>
+      <section class="option" aria-labelledby="yol-talep">
+        <span class="onboard__time">Yol 2</span>
+        <h2 id="yol-talep">Bu sayfadan talep oluştur</h2>
+        <p>Uygulamaya erişemiyorsan aşağıdaki formu doldur. E-posta uygulaman hazır bir taslakla açılır; göndermen yeterli.</p>
+      </section>
+    </div>
+
+    <ol class="mini-steps" aria-label="Talep adımları">
+      <li><b>01</b><strong>E-posta adresini yaz</strong><span>Pusula hesabında kullandığın adresi gir.</span></li>
+      <li><b>02</b><strong>Talebi gönder</strong><span>E-posta uygulaman açılır; taslağı gönder.</span></li>
+      <li><b>03</b><strong>Doğrulama ve silme</strong><span>Hesabın doğrulandıktan sonra verilerin silinir.</span></li>
+    </ol>
+
+    <div class="form-card">
+      <form id="deletion-form" action="mailto:destek@pusulayks.com?subject=Pusula%20YKS%20hesap%20ve%20veri%20silme%20talebi" method="post" enctype="text/plain" novalidate>
+        <label class="field-label" for="deletion-email">Pusula hesabındaki e-posta adresin</label>
+        <input class="field" id="deletion-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="ornek@eposta.com">
+
+        <label class="check">
+          <input id="deletion-confirm" name="confirm" type="checkbox" required>
+          <span>Hesabımın, profil bilgilerimin ve hesabımla ilişkili verilerin kalıcı olarak silinmesini talep ettiğimi onaylıyorum.</span>
+        </label>
+
+        <p class="form-error" id="deletion-error" hidden></p>
+
+        <button class="btn btn--accent btn--block" type="submit">Hesap silme talebi oluştur</button>
+      </form>
+
+      <div class="form-done" id="deletion-done" role="status" hidden>
+        <h2 id="deletion-done-title" tabindex="-1">Son adım: taslağı gönder.</h2>
+        <p>E-posta uygulamanda hazır bir taslak açılmış olmalı. Talebin, sen o taslağı gönderdiğinde bize ulaşır. E-posta uygulaman açılmadıysa talebini doğrudan <a href="mailto:destek@pusulayks.com">destek@pusulayks.com</a> adresine gönder; mesajına Pusula hesabında kullandığın e-posta adresini yazman yeterli.</p>
+      </div>
+    </div>
+
+    <div class="alert">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.1"/></g></svg>
+      <div>
+        <p><strong>Hesap silme geri alınamaz.</strong> Yasal yükümlülükler nedeniyle saklanması gereken kayıtlar varsa, bunlar ilgili mevzuatın öngördüğü süre boyunca tutulabilir. Ayrıntılar <a href="https://app.pusulayks.com/legal/gizlilik">Gizlilik Politikası ve KVKK</a> metninde.</p>
+        <p><strong>Aboneliğin varsa:</strong> hesabını silmek App Store aboneliğini kendiliğinden iptal etmez. Yenilenmemesi için aboneliğini App Store'daki abonelik sayfandan ayrıca iptal et.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer site-footer--simple">
+  <div class="wrap narrow">
+    <div class="footer-legal" style="margin-top:0;padding-top:0;border-top:0">
+      <p>Hesap silme talepleri: <a href="mailto:destek@pusulayks.com">destek@pusulayks.com</a> · <a href="https://app.pusulayks.com/legal/gizlilik">Gizlilik Politikası ve KVKK</a> · <a href="https://app.pusulayks.com/legal/kullanim-kosullari">Kullanım Koşulları</a></p>
+      <p>Satıcı: Mehmet Şeker (şahıs işletmesi) · Beykent Mah. 85112 Sk. No: 7/12, Şehitkamil/Gaziantep · Şehitkamil VD · VKN 10121307230</p>
+      <p>© <span data-year>2026</span> Pusula YKS</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
